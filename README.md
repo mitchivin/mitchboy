@@ -1,10 +1,13 @@
 # Game Boy Color Emulator
 
----
-
 <img width="1400" height="910" alt="gitgbc4" src="https://github.com/user-attachments/assets/5bb5da1f-c019-46d4-890c-1c1a69eb5ee6" />
 
 ---
+
+### [Launch Game Boy](https://mitchivin.github.io/gameboy/)
+
+---
+
 
 Game Boy Color emulator for the web. The physical device (shell, buttons, screen bezel, LED, and speaker grille) is a pixel-perfect Shadow DOM component designed in DoodleDev. Drop in a ROM and play.
 
