@@ -53,6 +53,21 @@ body::before {
   height: auto;
 }
 
+body.dev-chrome-hidden {
+  justify-content: center;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+body.dev-chrome-hidden .blueprint-header,
+body.dev-chrome-hidden .doodle-disclaimer {
+  display: none;
+}
+
+body.dev-chrome-hidden #gameboy-container {
+  --base-width: min(calc(100vw - 80px), calc((100dvh - 220px) * 0.591391));
+}
+
 body.app-loading #gameboy-container {
   visibility: hidden;
 }
@@ -169,6 +184,10 @@ body.app-loading #app-shell-loader {
 
   #gameboy-container {
     --base-width: min(calc(100vw - 20px), calc((100dvh - 120px) * 0.591391));
+  }
+
+  body.dev-chrome-hidden #gameboy-container {
+    --base-width: min(calc(100vw - 20px), calc((100dvh - 170px) * 0.591391));
   }
 
   .doodle-disclaimer .secondary {

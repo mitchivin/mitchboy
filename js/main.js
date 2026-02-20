@@ -11,6 +11,30 @@ import { Input } from './input.js';
 import { Keybinds } from './keybinds.js';
 import { scanROMs } from './romScanner.js';
 
+function isDevEnvironment() {
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '127.0.0.1' || host === '::1' || window.location.protocol === 'file:';
+}
+
+function setupDevChromeToggle() {
+    if (!isDevEnvironment()) return;
+
+    window.addEventListener('keydown', (e) => {
+        const target = e.target;
+        const isTypingTarget = target && (
+            target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable
+        );
+        if (isTypingTarget) return;
+
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
+            e.preventDefault();
+            document.body.classList.toggle('dev-chrome-hidden');
+        }
+    });
+}
+
 function hideGameboyLoader() {
     const loader = document.getElementById('app-shell-loader');
 
@@ -26,6 +50,8 @@ function hideGameboyLoader() {
 
 // Wait for custom element to be ready
 customElements.whenDefined('exported-content').then(async () => {
+    setupDevChromeToggle();
+
     // 1. Initialize DOM references
     DOM.init();
     DOM.mountToShadow();
