@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>GameBoy Color by Mitch Ivin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%238b5cf6'/><rect x='10' y='12' width='12' height='9' rx='1' fill='%23111'/><circle cx='22' cy='20' r='2.5' fill='%23ef4444'/><circle cx='18' cy='22' r='2.5' fill='%2322c55e'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Hide scrollbars globally */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+  <script src="js/core/resampler.js"></script>
+  <script src="js/core/XAudioServer.js"></script>
+  <script src="js/core/resize.js"></script>
+  <!-- Core emulator files -->
+  <script src="js/core/GameBoyCore.js"></script>
+  <script src="js/core/GameBoyIO.js"></script>
+</head>
+
+<body>
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <header class="blueprint-header">
+    <span>Game Boy Color</span>
+  </header>
+
+  <!-- ── Device Shell ───────────────────────────────────────── -->
+  <div id="gameboy-container">
+
+    <exported-content id="gameboy-component"></exported-content>
+
+  </div>
+
+  <!-- ── Footer ────────────────────────────────────────────── -->
+  <footer class="doodle-disclaimer"></footer>
+
+  <!-- Assets to be mounted into Shadow DOM -->
+  <div id="shadow-assets" class="hidden">
+    <!-- Screen Display Area - Canvas for Game Rendering -->
+    <div id="rom-mode-container"
+      class="w-full h-full flex items-center justify-center relative overflow-hidden hidden pointer-events-auto">
+      <canvas id="gameboy-screen" class="w-full h-full" style="display: block; object-fit: fill;"></canvas>
+    </div>
+
+    <!-- Menu Mode Container -->
+    <div id="menu-mode-container" class="w-full h-full flex relative overflow-hidden pointer-events-auto">
+      <div class="w-full h-full flex flex-col overflow-hidden relative">
+
+        <div class="w-full h-full flex flex-col items-center justify-center">
+          <div class="relative w-full h-full flex flex-col items-center justify-start overflow-hidden">
+            <!-- Carousel Track -->
+            <div id="rom-carousel" class="flex flex-col transition-transform duration-500">
+              <!-- ROM Cards with integrated buttons will be injected here -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <!-- Hidden file inputs -->
+      <input type="file" id="rom-file-input" accept=".gb,.gbc" class="hidden">
+      <input type="file" id="save-state-input" accept=".sav,.json" class="hidden">
+    </div>
+  </div>
+
+  <script type="module" src="js/components/GameboyDesign.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
