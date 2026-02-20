@@ -78,7 +78,7 @@ class UIManager {
             DOM.header.classList.remove('is-controls');
             DOM.header.innerHTML = `
                 <span class="corner-label corner-top-left">Game Boy Color</span>
-                <span class="corner-label corner-top-right"><a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">Preset 1</a></span>
+                <span class="corner-label corner-top-right">Preset 1</span>
             `;
             return;
         }

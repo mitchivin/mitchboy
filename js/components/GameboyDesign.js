@@ -723,7 +723,7 @@ const componentHTML = `
           </g>
         </svg>
       </button>
-      <section class="item" id="gbc" style="height: 100.001%; isolation: isolate; left: 8e-06%; top: 0%; width: 100.001%; z-index: 2">
+      <section class="item" id="gbc" style="height: 100%; isolation: isolate; left: 0%; top: 0%; width: 100%; z-index: 2">
         <div class="item" id="notches" style="height: 9.88024%; left: 0%; top: 9.81976%; width: 100%; z-index: 2">
           <svg class="shape" viewBox="0 0 441.346855 73.735450" preserveAspectRatio="none" width="441.346855" height="73.735450">
             <g>
