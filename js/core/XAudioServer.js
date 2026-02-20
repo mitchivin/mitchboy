@@ -154,6 +154,10 @@ XAudioServer.prototype.initializeAudio = function () {
 }
 XAudioServer.prototype.initializeMediaStream = function () {
 	this.audioHandleMediaStream = new Audio();
+	this.audioHandleMediaStream.setAttribute("playsinline", "");
+	this.audioHandleMediaStream.setAttribute("webkit-playsinline", "");
+	this.audioHandleMediaStream.preload = "auto";
+	this.audioHandleMediaStream.autoplay = true;
 	this.resetCallbackAPIAudioBuffer(XAudioJSMediaStreamSampleRate);
 	if (XAudioJSMediaStreamWorker) {
 		//WebWorker is not GC'd, so manually collect it:
@@ -165,7 +169,10 @@ XAudioServer.prototype.initializeMediaStream = function () {
 	this.audioHandleMediaStream.volume = XAudioJSVolume;
 	XAudioJSMediaStreamWorker.onmessage = XAudioJSMediaStreamPushAudio;
 	XAudioJSMediaStreamWorker.postMessage([1, XAudioJSResampleBufferSize, XAudioJSChannelsAllocated]);
-	this.audioHandleMediaStream.play();
+	var playPromise = this.audioHandleMediaStream.play();
+	if (playPromise && typeof playPromise.catch == "function") {
+		playPromise.catch(function () {});
+	}
 	this.audioType = 3;
 }
 XAudioServer.prototype.initializeMozAudio = function () {

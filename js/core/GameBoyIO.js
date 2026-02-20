@@ -4,6 +4,7 @@ var gbRunInterval = null;				//GameBoyCore Timer
 var gbRunRAF = null;					//GameBoyCore rAF handle
 var gbRAFAccumulator = 0;				//Accumulated elapsed ms for fixed-step emulation
 var gbRAFLastTimestamp = 0;			//Last rAF timestamp
+var gbMobileProfileApplied = false;	//One-time mobile audio/perf tuning
 var settings = [						//Some settings.
 	true, 								//Turn on sound.
 	true,								//Boot with boot ROM first?
@@ -51,6 +52,19 @@ function shouldUseRAFScheduler() {
 	return (uaMobile || uaDataMobile || (touchPoints && coarsePointer)) && typeof window.requestAnimationFrame === "function";
 }
 
+function applyMobilePerformanceProfile() {
+	if (gbMobileProfileApplied) {
+		return;
+	}
+
+	if (shouldUseRAFScheduler()) {
+		settings[7] = Math.max(settings[7], 18);
+		settings[8] = Math.max(settings[8], 36);
+	}
+
+	gbMobileProfileApplied = true;
+}
+
 function runWithRAF() {
 	var emulationStep = Math.max(1, settings[6] | 0);
 	gbRAFAccumulator = 0;
@@ -91,7 +105,7 @@ function runWithRAF() {
 		}
 
 		if (steps >= maxCatchUpSteps) {
-			gbRAFAccumulator = 0;
+			gbRAFAccumulator = Math.min(gbRAFAccumulator, emulationStep * maxCatchUpSteps);
 		}
 
 		gbRunRAF = window.requestAnimationFrame(tick);
@@ -116,6 +130,7 @@ function stopSchedulers() {
 }
 
 function start(canvas, ROM) {
+	applyMobilePerformanceProfile();
 	clearLastEmulation();
 	autoSave();	//If we are about to load a new game, then save the last one...
 	gameboy = new GameBoyCore(canvas, ROM);

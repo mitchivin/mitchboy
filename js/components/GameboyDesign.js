@@ -182,6 +182,20 @@ button.item {
   .led-on-menu {
     animation: none;
   }
+
+  #a, #b, #start, #select,
+  #up, #down, #left, #right, #mid,
+  .active-fill,
+  #a:active .btn-moving-part,
+  #b:active .btn-moving-part,
+  #a.btn-pressed .btn-moving-part,
+  #b.btn-pressed .btn-moving-part,
+  #start:active .btn-moving-part,
+  #select:active .btn-moving-part,
+  #start.btn-pressed .btn-moving-part,
+  #select.btn-pressed .btn-moving-part {
+    transition: none !important;
+  }
 }
 
 .grill-dot {

@@ -7,7 +7,54 @@ import { State } from './state.js';
 import { DOM } from './dom.js';
 
 class EmulatorManager {
+    _isIOSDevice() {
+        const ua = navigator.userAgent || '';
+        const iOSUA = /iPad|iPhone|iPod/i.test(ua);
+        const iPadOS = navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+        return iOSUA || iPadOS;
+    }
+
+    _primeIOSAudioSession() {
+        if (!this._isIOSDevice()) return;
+
+        try {
+            if (navigator.audioSession && navigator.audioSession.type !== 'playback') {
+                navigator.audioSession.type = 'playback';
+            }
+        } catch {
+            // Ignore if unsupported or blocked.
+        }
+
+        if (!window.__gameboyIOSAudioPrimer) {
+            const primer = document.createElement('audio');
+            primer.setAttribute('playsinline', '');
+            primer.setAttribute('webkit-playsinline', '');
+            primer.preload = 'auto';
+            primer.loop = true;
+            primer.muted = false;
+            primer.volume = 0.0001;
+            primer.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=';
+            primer.style.display = 'none';
+            document.body.appendChild(primer);
+            window.__gameboyIOSAudioPrimer = primer;
+        }
+
+        const primer = window.__gameboyIOSAudioPrimer;
+        if (primer && typeof primer.play === 'function') {
+            try {
+                const playResult = primer.play();
+                if (playResult && typeof playResult.catch === 'function') {
+                    playResult.catch(() => {});
+                }
+            } catch {
+                // Ignore play errors; we'll retry on next user gesture.
+            }
+        }
+    }
+
     unlockAudio() {
+        this._primeIOSAudioSession();
+
         const resumeIfNeeded = (context) => {
             if (!context || typeof context.resume !== 'function') return;
             if (context.state && context.state !== 'suspended') return;

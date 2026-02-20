@@ -691,6 +691,7 @@ class UIManager {
             <div class="rom-card-body">
                 <div class="rom-card-icon rom-card-icon--fill" style="background: none; overflow: hidden;">
                     <img src="${imagePath}" alt="${title}" 
+                         loading="lazy" decoding="async"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
                          style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; display: block;">
                     <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 22cqw;">🎮</div>
