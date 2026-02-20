@@ -177,6 +177,12 @@ button.item {
   filter: drop-shadow(0 0 4px rgba(255, 180, 0, 0.8)) contrast(140%) saturate(110%) !important;
   animation: led-flicker 0.12s infinite;
 }
+@media (pointer: coarse) {
+  .led-on,
+  .led-on-menu {
+    animation: none;
+  }
+}
 
 .grill-dot {
   opacity: 0.78;
