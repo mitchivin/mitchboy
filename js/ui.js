@@ -73,17 +73,17 @@ class UIManager {
         const isMobile = this.isMobile();
 
         if (mode !== 'rom') {
-            DOM.header.innerHTML = `<span>Game Boy Color</span>`;
+            DOM.header.innerHTML = `<span>Game Boy by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>`;
             return;
         }
 
         if (isMobile) {
             DOM.header.innerHTML = `
-                <span>Return to <span class="header-menu-btn footer-interactive">Menu</span></span>
+                <span class="header-menu-btn footer-interactive">Home</span>
             `;
         } else {
             DOM.header.innerHTML = `
-                <span>Return to <span class="header-menu-btn footer-interactive">Menu</span></span>
+                <span class="header-menu-btn footer-interactive">Home</span>
                 <span class="sep">·</span>
                 <span class="header-save-btn footer-interactive">SAVE</span>
                 <span class="sep">·</span>
@@ -112,9 +112,7 @@ class UIManager {
 
         if (mode !== 'rom') {
             DOM.footer.innerHTML = `
-                <a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">doodledev</a>
-                <span class="sep">·</span>
-                <a href="https://mitchivin.com" target="_blank" rel="noopener noreferrer">Mitch Ivin</a>
+                <span>Designed in <a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">doodledev</a></span>
             `;
             return;
         }
