@@ -11,6 +11,19 @@ import { Input } from './input.js';
 import { Keybinds } from './keybinds.js';
 import { scanROMs } from './romScanner.js';
 
+function hideGameboyLoader() {
+    const loader = document.getElementById('app-shell-loader');
+
+    document.body.classList.remove('app-loading');
+
+    if (!loader) return;
+
+    loader.classList.add('is-hidden');
+    setTimeout(() => {
+        loader.remove();
+    }, 260);
+}
+
 // Wait for custom element to be ready
 customElements.whenDefined('exported-content').then(async () => {
     // 1. Initialize DOM references
@@ -38,4 +51,11 @@ customElements.whenDefined('exported-content').then(async () => {
     // 8. Scan ROMs
     const roms = await scanROMs();
     State.set('romList', roms);
+
+    // 9. Reveal shell after first stable paint
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            hideGameboyLoader();
+        });
+    });
 });

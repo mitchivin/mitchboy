@@ -26,7 +26,7 @@
   <script src="js/core/GameBoyIO.js"></script>
 </head>
 
-<body>
+<body class="app-loading">
 
   <!-- ── Header ────────────────────────────────────────────── -->
   <header class="blueprint-header">
@@ -38,6 +38,13 @@
 
     <exported-content id="gameboy-component"></exported-content>
 
+  </div>
+
+  <div id="app-shell-loader" aria-live="polite" aria-label="Loading Game Boy shell">
+    <div class="gameboy-loader-box">
+      <div class="gameboy-loader-spinner" aria-hidden="true"></div>
+      <div class="gameboy-loader-text">BOOTING SHELL...</div>
+    </div>
   </div>
 
   <!-- ── Footer ────────────────────────────────────────────── -->

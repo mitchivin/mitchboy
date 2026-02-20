@@ -70,19 +70,26 @@ class UIManager {
     _updateHeader() {
         if (!DOM.header) return;
         const mode = State.get('currentMode');
+        const isMobile = this.isMobile();
 
         if (mode !== 'rom') {
             DOM.header.innerHTML = `<span>Game Boy Color</span>`;
             return;
         }
 
-        DOM.header.innerHTML = `
-            <span>Return to <span class="header-menu-btn footer-interactive">Menu</span></span>
-            <span class="sep">·</span>
-            <span class="header-save-btn footer-interactive">SAVE</span>
-            <span class="sep">·</span>
-            <span class="header-load-btn footer-interactive">LOAD</span>
-        `;
+        if (isMobile) {
+            DOM.header.innerHTML = `
+                <span>Return to <span class="header-menu-btn footer-interactive">Menu</span></span>
+            `;
+        } else {
+            DOM.header.innerHTML = `
+                <span>Return to <span class="header-menu-btn footer-interactive">Menu</span></span>
+                <span class="sep">·</span>
+                <span class="header-save-btn footer-interactive">SAVE</span>
+                <span class="sep">·</span>
+                <span class="header-load-btn footer-interactive">LOAD</span>
+            `;
+        }
 
         DOM.header.querySelector('.header-menu-btn')?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -289,10 +296,12 @@ class UIManager {
             currentIndex++;
         }
 
-        // 3. Upload Card
-        const uploadCard = this.createUploadCard(currentIndex);
-        DOM.carousel.appendChild(uploadCard);
-        currentIndex++;
+        // 3. Upload Card (desktop only)
+        if (!this.isMobile()) {
+            const uploadCard = this.createUploadCard(currentIndex);
+            DOM.carousel.appendChild(uploadCard);
+            currentIndex++;
+        }
 
         // 4. Info Card (Try DoodleDev) - At the bottom
         const infoCard = this.createInfoCard();
@@ -552,7 +561,6 @@ class UIManager {
             overlay.remove();
 
             if (shouldProceed) {
-                State.set('mobileWarningShown', true);
                 if (onConfirm) onConfirm();
             }
 
@@ -563,6 +571,9 @@ class UIManager {
     openMobileWarning(onConfirm) {
         // Prevent duplicates
         if (document.querySelector('#mobile-warning-overlay')) return;
+
+        // Mark as shown immediately so it only appears once per page load.
+        State.set('mobileWarningShown', true);
 
         const overlay = document.createElement('div');
         overlay.id = 'mobile-warning-overlay';

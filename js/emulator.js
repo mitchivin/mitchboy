@@ -7,6 +7,15 @@ import { State } from './state.js';
 import { DOM } from './dom.js';
 
 class EmulatorManager {
+    isMobileDevice() {
+        const ua = navigator.userAgent || '';
+        const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(ua);
+        const uaDataMobile = navigator.userAgentData?.mobile === true;
+        const touchPoints = (navigator.maxTouchPoints || 0) > 0;
+        const coarsePointer = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+        return uaDataMobile || uaMobile || (touchPoints && coarsePointer);
+    }
+
     _isIOSDevice() {
         const ua = navigator.userAgent || '';
         const iOSUA = /iPad|iPhone|iPod/i.test(ua);
@@ -298,6 +307,7 @@ class EmulatorManager {
     }
 
     saveState() {
+        if (this.isMobileDevice()) return;
         if (!window.gameboy || !State.get('isGameLoaded')) return;
 
         try {
@@ -334,6 +344,7 @@ class EmulatorManager {
     }
 
     loadState() {
+        if (this.isMobileDevice()) return;
         if (DOM.saveStateInput) {
             DOM.saveStateInput.click();
         }
