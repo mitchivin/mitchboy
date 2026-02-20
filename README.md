@@ -1,4 +1,6 @@
-# Game Boy Color
+# Game Boy Color Emulator
+
+<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/13412c94-cb83-4434-ba7b-f3d3c1720175" />
 
 ---
 
@@ -6,7 +8,7 @@
 
 ---
 
-Game Boy Color emulator for the web. The physical device — shell, buttons, screen bezel, LED, and speaker grille — is a pixel-perfect Shadow DOM component designed in DoodleDev. Drop in a ROM and play.
+Game Boy Color emulator for the web. The physical device (shell, buttons, screen bezel, LED, and speaker grille) is a pixel-perfect Shadow DOM component designed in DoodleDev. Drop in a ROM and play.
 
 ## Overview
 
@@ -39,6 +41,8 @@ The emulator core, menu system, and all input handling are built directly onto t
 - **Cheat System**: A hidden konami-style input sequence unlocks the full ROM library.
 - **Keys Overlay**: Toggle key labels on/off. All game input is blocked while the overlay is active.
 - **Responsive Layout**: Scales to any viewport. Shows a mobile warning on small screens.
+
+<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/16b95645-1c49-4206-8f06-bcdf0fada719" />
 
 ## Project Structure
 
@@ -77,6 +81,8 @@ Place `.gb` and `.gbc` files inside `src/renderer/games/` and add an entry to `m
 ]
 ```
 
+<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/cf036ffd-303d-450e-84cb-a59d363eb631" />
+
 ## Running Locally
 
 `npm install` is only needed for the Tailwind CLI. The app itself has zero runtime dependencies.
@@ -89,7 +95,7 @@ npm run build:css
 npx serve src/renderer
 ```
 
-Open `http://localhost:3000`. A local server is required — the ROM manifest is loaded via `fetch`.
+Open `http://localhost:3000`. A local server is required; the ROM manifest is loaded via `fetch`.
 
 To watch for CSS changes during development:
 
@@ -103,7 +109,7 @@ npm run dev
 npm run build
 ```
 
-Compiles Tailwind and copies `src/renderer/` to `dist/`. The `dist/` folder is the deployable site — serve it from any static host or push it to GitHub Pages.
+Compiles Tailwind and copies `src/renderer/` to `dist/`. The `dist/` folder is the deployable site; serve it from any static host or push it to GitHub Pages.
 
 ## Controls
 
@@ -127,6 +133,7 @@ Compiles Tailwind and copies `src/renderer/` to `dist/`. The `dist/` folder is t
 
 Designed and built by **[Mitch Ivin](https://mitchivin.com/)**.
 Shell designed in **[DoodleDev](https://doodledev.app)**.
+Emulator Core by **[Grant Galitz](https://github.com/taisel/GameBoy-Online)**.
 
 ## License
 
