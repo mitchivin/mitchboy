@@ -264,6 +264,10 @@ class KeybindManager {
             }
         });
 
+        // Cancel any in-progress rebind when an overlay takes focus
+        window.addEventListener('cheat-overlay-opened', () => this.cancelRebind());
+        window.addEventListener('mobile-warning-opened', () => this.cancelRebind());
+
         // Wait a tick for Shadow DOM to be ready
         setTimeout(() => {
             this.updateAllTooltips();
