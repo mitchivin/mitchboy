@@ -158,6 +158,16 @@ class UIManager {
         } else {
             // Always allow going back to menu — turn off keys overlay
             this.setKeysMode(false);
+
+            // Pause emulation immediately before switching to menu to reduce UI contention
+            if (State.get('isGameLoaded')) {
+                if (typeof window.pause === 'function' && typeof window.GameBoyEmulatorPlaying === 'function') {
+                    if (window.GameBoyEmulatorPlaying()) {
+                        window.pause();
+                    }
+                }
+            }
+
             State.set('currentMode', 'menu');
         }
     }
@@ -504,7 +514,21 @@ class UIManager {
     isMobile() {
         const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(navigator.userAgent || '');
         const uaDataMobile = navigator.userAgentData?.mobile === true;
-        return uaDataMobile || uaMobile;
+        const touchPoints = (navigator.maxTouchPoints || 0) > 0;
+        const coarsePointer = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+        return uaDataMobile || uaMobile || (touchPoints && coarsePointer);
+    }
+
+    maybeShowMobileWarningOnLoad() {
+        if (!this.isMobile()) return;
+        if (State.get('mobileWarningShown')) return;
+
+        // Delay to ensure all startup listeners are attached before opening.
+        setTimeout(() => {
+            if (!document.querySelector('#mobile-warning-overlay')) {
+                this.openMobileWarning(() => {});
+            }
+        }, 0);
     }
 
     closeMobileWarning(shouldProceed = false) {
@@ -832,14 +856,6 @@ class UIManager {
 
             DOM.carousel.style.transform = `translateY(${translateY}px)`;
             DOM.carousel.style.opacity = '1';
-
-            if (State.get('currentMode') === 'menu' && State.get('isGameLoaded')) {
-                if (typeof window.pause === 'function' && typeof window.GameBoyEmulatorPlaying === 'function') {
-                    if (window.GameBoyEmulatorPlaying()) {
-                        window.pause();
-                    }
-                }
-            }
         });
     }
 

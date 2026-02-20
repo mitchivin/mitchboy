@@ -158,6 +158,9 @@ button.item {
 #power-light {
   pointer-events: none !important;
 }
+#scr-glare {
+  display: none !important;
+}
 #text-phones:hover {
   opacity: 0.5 !important;
 }

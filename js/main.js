@@ -32,7 +32,10 @@ customElements.whenDefined('exported-content').then(async () => {
     // 6. Initialize keybinds
     Keybinds.init();
 
-    // 7. Scan ROMs
+    // 7. Show mobile warning early on page load
+    UI.maybeShowMobileWarningOnLoad();
+
+    // 8. Scan ROMs
     const roms = await scanROMs();
     State.set('romList', roms);
 });
