@@ -73,13 +73,19 @@ class UIManager {
         const isMobile = this.isMobile();
 
         if (mode !== 'rom') {
+            document.body.classList.remove('rom-controls-active');
+            DOM.header.classList.add('is-corner');
+            DOM.header.classList.remove('is-controls');
             DOM.header.innerHTML = `
-                <span><a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">Preset 1</a></span>
-                <span class="sep">|</span>
-                <span>Game Boy</span>
+                <span class="corner-label corner-top-left">Game Boy Color</span>
+                <span class="corner-label corner-top-right"><a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">Preset 1</a></span>
             `;
             return;
         }
+
+        document.body.classList.add('rom-controls-active');
+        DOM.header.classList.remove('is-corner');
+        DOM.header.classList.add('is-controls');
 
         if (isMobile) {
             DOM.header.innerHTML = `
@@ -89,9 +95,9 @@ class UIManager {
             DOM.header.innerHTML = `
                 <span class="header-menu-btn footer-interactive">Home</span>
                 <span class="sep">·</span>
-                <span class="header-save-btn footer-interactive">SAVE</span>
+                <span class="header-save-btn footer-interactive">Save</span>
                 <span class="sep">·</span>
-                <span class="header-load-btn footer-interactive">LOAD</span>
+                <span class="header-load-btn footer-interactive">Load</span>
             `;
         }
 
@@ -115,11 +121,17 @@ class UIManager {
         const mode = State.get('currentMode');
 
         if (mode !== 'rom') {
+            DOM.footer.classList.add('is-corner');
+            DOM.footer.classList.remove('is-controls');
             DOM.footer.innerHTML = `
-                <span>by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>
+                <span class="corner-label corner-bottom-left">built in <a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">doodledev</a></span>
+                <span class="corner-label corner-bottom-right">by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>
             `;
             return;
         }
+
+        DOM.footer.classList.remove('is-corner');
+        DOM.footer.classList.add('is-controls');
 
         const speed = State.get('currentSpeed');
         const volume = State.get('currentVolume');
@@ -128,17 +140,17 @@ class UIManager {
 
         if (isMobile) {
             DOM.footer.innerHTML = `
-                <span><span class="speed-btn footer-interactive">${speed}x</span> SPEED</span>
+                <span><span class="speed-btn footer-interactive">${speed}x</span> Speed</span>
                 <span class="sep secondary">·</span>
-                <span><span class="volume-btn footer-interactive">${volume}%</span> VOLUME</span>
+                <span><span class="volume-btn footer-interactive">${volume}%</span> Volume</span>
             `;
         } else {
             DOM.footer.innerHTML = `
-                <span>KEYS <span class="keys-btn footer-interactive">${keys ? 'ON' : 'OFF'}</span></span>
+                <span>Keys <span class="keys-btn footer-interactive">${keys ? 'On' : 'Off'}</span></span>
                 <span class="sep secondary">·</span>
-                <span><span class="speed-btn footer-interactive">${speed}x</span> SPEED</span>
+                <span><span class="speed-btn footer-interactive">${speed}x</span> Speed</span>
                 <span class="sep secondary">·</span>
-                <span><span class="volume-btn footer-interactive">${volume}%</span> VOLUME</span>
+                <span><span class="volume-btn footer-interactive">${volume}%</span> Volume</span>
             `;
         }
 
@@ -446,13 +458,26 @@ class UIManager {
         this._cheatHintTimers = [];
         this._cheatHintElements = [];
 
-        // Corner positions cycle: header-left, header-right, footer-right, footer-left
-        const corners = [
-            { target: header, left: '10%' },
-            { target: header, left: '90%' },
-            { target: footer, left: '90%' },
-            { target: footer, left: '10%' },
-        ];
+        const isCornerMode = header.classList.contains('is-corner') && footer.classList.contains('is-corner');
+
+        let corners;
+        if (isCornerMode) {
+            const edge = this.isMobile() ? '14px' : '24px';
+            corners = [
+                { target: document.body, fixed: true, top: edge, left: edge },
+                { target: document.body, fixed: true, top: edge, right: edge },
+                { target: document.body, fixed: true, bottom: edge, right: edge },
+                { target: document.body, fixed: true, bottom: edge, left: edge },
+            ];
+        } else {
+            // Corner positions cycle: header-left, header-right, footer-right, footer-left
+            corners = [
+                { target: header, left: '10%' },
+                { target: header, left: '90%' },
+                { target: footer, left: '90%' },
+                { target: footer, left: '10%' },
+            ];
+        }
 
         const showDuration = 1000;
         const fadeDuration = 300;
@@ -461,10 +486,12 @@ class UIManager {
         symbols.forEach((sym, i) => {
             const corner = corners[i % corners.length];
             const delay = 600 + i * stepInterval;
+            let hintEl = null;
 
             const showTimer = setTimeout(() => {
                 const span = document.createElement('span');
                 span.className = 'cheat-hint-char';
+                hintEl = span;
                 if (sym.html) {
                     span.innerHTML = sym.html;
                     span.style.display = 'inline-flex';
@@ -473,7 +500,17 @@ class UIManager {
                 } else {
                     span.textContent = sym.text;
                 }
-                span.style.left = corner.left;
+
+                if (corner.fixed) {
+                    span.classList.add('cheat-hint-char-fixed');
+                    if (corner.top) span.style.top = corner.top;
+                    if (corner.bottom) span.style.bottom = corner.bottom;
+                    if (corner.left) span.style.left = corner.left;
+                    if (corner.right) span.style.right = corner.right;
+                } else {
+                    span.style.left = corner.left;
+                }
+
                 corner.target.appendChild(span);
                 this._cheatHintElements.push(span);
 
@@ -482,10 +519,9 @@ class UIManager {
             }, delay);
 
             const hideTimer = setTimeout(() => {
-                const el = corner.target.querySelector('.cheat-hint-char');
-                if (el) {
-                    el.classList.add('cheat-hint-char-out');
-                    setTimeout(() => el.remove(), fadeDuration);
+                if (hintEl && hintEl.isConnected) {
+                    hintEl.classList.add('cheat-hint-char-out');
+                    setTimeout(() => hintEl.remove(), fadeDuration);
                 }
             }, delay + showDuration);
 

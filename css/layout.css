@@ -56,6 +56,10 @@ body.dev-chrome-hidden {
   padding-bottom: 40px;
 }
 
+body.rom-controls-active {
+  justify-content: center;
+}
+
 body.dev-chrome-hidden .blueprint-header,
 body.dev-chrome-hidden .doodle-disclaimer {
   display: none;
@@ -89,6 +93,10 @@ body.app-loading #app-shell-loader {
   display: flex;
 }
 
+body.awaiting-mobile-confirm #app-shell-loader {
+  display: none;
+}
+
 .gameboy-loader-box {
   border: 1px solid rgba(74, 222, 128, 0.45);
   border-radius: 10px;
@@ -110,7 +118,7 @@ body.app-loading #app-shell-loader {
 }
 
 .gameboy-loader-text {
-  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -129,7 +137,7 @@ body.app-loading #app-shell-loader {
 
 .blueprint-header,
 .doodle-disclaimer {
-  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 500;
   text-transform: uppercase;
@@ -147,6 +155,99 @@ body.app-loading #app-shell-loader {
   justify-content: center;
   gap: 20px;
   color: rgba(255, 255, 255, 0.85);
+}
+
+.blueprint-header.is-corner,
+.doodle-disclaimer.is-corner {
+  height: 0;
+  flex: 0 0 0;
+  width: 0;
+  overflow: visible;
+  padding: 0;
+  gap: 0;
+}
+
+.corner-label {
+  position: fixed;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.85);
+  user-select: none;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.corner-top-left {
+  top: 24px;
+  left: 24px;
+}
+
+.corner-top-right {
+  top: 24px;
+  right: 24px;
+  text-align: right;
+}
+
+.corner-bottom-left {
+  bottom: 24px;
+  left: 24px;
+}
+
+.corner-bottom-right {
+  bottom: 24px;
+  right: 24px;
+  text-align: right;
+}
+
+.blueprint-header.is-corner .sep,
+.doodle-disclaimer.is-corner .sep {
+  display: none;
+}
+
+.blueprint-header.is-corner a,
+.doodle-disclaimer.is-corner a {
+  font-weight: 600;
+}
+
+.blueprint-header.is-controls,
+.doodle-disclaimer.is-controls {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  justify-content: center;
+  gap: 20px;
+  padding: 0;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+  position: fixed;
+  left: 24px;
+  right: 24px;
+  width: auto;
+  z-index: 100;
+  height: auto;
+  flex: 0 0 auto;
+  line-height: 1.2;
+}
+
+.blueprint-header.is-controls {
+  top: 24px;
+}
+
+.doodle-disclaimer.is-controls {
+  bottom: 24px;
+}
+
+.blueprint-header.is-controls,
+.doodle-disclaimer.is-controls,
+.blueprint-header.is-controls .footer-interactive,
+.doodle-disclaimer.is-controls .footer-interactive,
+.blueprint-header.is-controls a,
+.doodle-disclaimer.is-controls a {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 .blueprint-header .sep,
@@ -172,6 +273,46 @@ body.app-loading #app-shell-loader {
 @media (max-width: 600px) {
   body {
     padding: 0 10px;
+  }
+
+  .blueprint-header.is-controls,
+  .doodle-disclaimer.is-controls {
+    left: 14px;
+    right: 14px;
+  }
+
+  .blueprint-header.is-controls {
+    top: 14px;
+  }
+
+  .doodle-disclaimer.is-controls {
+    bottom: 14px;
+  }
+
+  .corner-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+  }
+
+  .corner-top-left,
+  .corner-top-right {
+    top: 14px;
+  }
+
+  .corner-top-left,
+  .corner-bottom-left {
+    left: 14px;
+  }
+
+  .corner-top-right,
+  .corner-bottom-right {
+    right: 14px;
+  }
+
+  .corner-bottom-left,
+  .corner-bottom-right {
+    bottom: 14px;
   }
 
   .blueprint-header,
@@ -357,16 +498,30 @@ body.app-loading #app-shell-loader {
   pointer-events: none;
 }
 
+.cheat-hint-char.cheat-hint-char-fixed {
+  position: fixed;
+  top: auto;
+  transform: scale(0.86);
+}
+
 .cheat-hint-char.cheat-hint-char-in {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
+.cheat-hint-char.cheat-hint-char-fixed.cheat-hint-char-in {
+  transform: scale(1);
+}
+
 .cheat-hint-char.cheat-hint-char-out {
   opacity: 0;
   transform: translate(-50%, -50%) scale(1.07);
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cheat-hint-char.cheat-hint-char-fixed.cheat-hint-char-out {
+  transform: scale(1.07);
 }
 
 .mobile-warning-text {
@@ -389,9 +544,3 @@ body.app-loading #app-shell-loader {
   cursor: pointer;
 }
 
-.mobile-warning-btn-focused {
-  background: rgba(22, 163, 74, 0.58);
-  border-color: rgba(74, 222, 128, 0.95);
-  color: #ecfdf5;
-  box-shadow: 0 0 12px rgba(74, 222, 128, 0.45);
-}

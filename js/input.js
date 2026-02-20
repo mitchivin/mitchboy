@@ -19,7 +19,6 @@ class InputManager {
         this.isCheatInputMode = false; // True when user is actively entering the cheat
         this.isMobileWarningMode = false;
         this.selectHeld = false;
-        this._mobileWarningFocusIndex = 0; // 0 = proceed, 1 = cancel
     }
 
     init() {
@@ -38,8 +37,6 @@ class InputManager {
         });
         window.addEventListener('mobile-warning-opened', () => {
             this.isMobileWarningMode = true;
-            this._mobileWarningFocusIndex = 0;
-            this._mobileWarningSetFocus(0);
         });
         window.addEventListener('mobile-warning-closed', () => {
             this.isMobileWarningMode = false;
@@ -47,18 +44,11 @@ class InputManager {
         window.addEventListener('cheat-submit', () => this.tryActivateCheat());
     }
 
-    _mobileWarningSetFocus(index) {
-        const overlay = document.querySelector('#mobile-warning-overlay');
-        if (!overlay) return;
-        const btns = overlay.querySelectorAll('.mobile-warning-btn');
-        btns.forEach((b, i) => b.classList.toggle('mobile-warning-btn-focused', i === index));
-    }
-
     _mobileWarningConfirmFocused() {
         const overlay = document.querySelector('#mobile-warning-overlay');
         if (!overlay) return;
-        const focused = overlay.querySelector('.mobile-warning-btn-focused');
-        if (focused) focused.click();
+        const proceedBtn = overlay.querySelector('.mobile-warning-btn-proceed');
+        if (proceedBtn) proceedBtn.click();
     }
 
     setupKeyboard() {
@@ -122,10 +112,6 @@ class InputManager {
 
                 if (currentMode === 'menu') {
                     if (this.isMobileWarningMode) {
-                        if (direction === 'left' || direction === 'right') {
-                            this._mobileWarningFocusIndex = this._mobileWarningFocusIndex === 0 ? 1 : 0;
-                            this._mobileWarningSetFocus(this._mobileWarningFocusIndex);
-                        }
                         return;
                     }
 
@@ -170,8 +156,6 @@ class InputManager {
                     if (this.isMobileWarningMode) {
                         if (mapping.button === 'a' || mapping.button === 'start') {
                             this._mobileWarningConfirmFocused();
-                        } else if (mapping.button === 'b') {
-                            UI.closeMobileWarning(false);
                         }
                         return;
                     }
@@ -305,8 +289,6 @@ class InputManager {
                 if (this.isMobileWarningMode) {
                     if (buttonName === 'a' || buttonName === 'start') {
                         this._mobileWarningConfirmFocused();
-                    } else if (buttonName === 'b') {
-                        UI.closeMobileWarning(false);
                     }
                     return;
                 }
@@ -381,10 +363,6 @@ class InputManager {
         if (currentMode === 'menu') {
             if (isPressed) {
                 if (this.isMobileWarningMode) {
-                    if (direction === 'left' || direction === 'right') {
-                        this._mobileWarningFocusIndex = this._mobileWarningFocusIndex === 0 ? 1 : 0;
-                        this._mobileWarningSetFocus(this._mobileWarningFocusIndex);
-                    }
                     return;
                 }
 

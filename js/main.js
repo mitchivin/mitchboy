@@ -11,6 +11,14 @@ import { Input } from './input.js';
 import { Keybinds } from './keybinds.js';
 import { scanROMs } from './romScanner.js';
 
+function isMobileDevice() {
+    const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(navigator.userAgent || '');
+    const uaDataMobile = navigator.userAgentData?.mobile === true;
+    const touchPoints = (navigator.maxTouchPoints || 0) > 0;
+    const coarsePointer = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+    return uaDataMobile || uaMobile || (touchPoints && coarsePointer);
+}
+
 function isDevEnvironment() {
     const host = window.location.hostname;
     return host === 'localhost' || host === '127.0.0.1' || host === '::1' || window.location.protocol === 'file:';
@@ -48,9 +56,61 @@ function hideGameboyLoader() {
     }, 260);
 }
 
-// Wait for custom element to be ready
-customElements.whenDefined('exported-content').then(async () => {
+function showPreloadMobileWarning() {
+    return new Promise((resolve) => {
+        const existing = document.querySelector('#mobile-warning-overlay');
+        if (existing) {
+            resolve(true);
+            return;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'mobile-warning-overlay';
+        overlay.innerHTML = `
+            <div class="mobile-warning-box">
+                <div class="mobile-warning-title">MOBILE WARNING</div>
+                <div class="mobile-warning-text">
+                    This emulator may run poorly on mobile and audio can stutter.
+                </div>
+                <div class="mobile-warning-actions">
+                    <button class="mobile-warning-btn mobile-warning-btn-proceed">PROCEED</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        overlay.offsetHeight;
+        overlay.classList.add('visible');
+
+        const close = () => {
+            overlay.classList.remove('visible');
+            setTimeout(() => {
+                overlay.remove();
+                resolve(true);
+            }, 300);
+        };
+
+        overlay.querySelector('.mobile-warning-btn-proceed')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            close();
+        });
+    });
+}
+
+async function bootstrap() {
     setupDevChromeToggle();
+
+    const isMobile = isMobileDevice();
+
+    if (!isMobile) {
+        document.body.classList.remove('awaiting-mobile-confirm');
+    } else {
+        await showPreloadMobileWarning();
+        document.body.classList.remove('awaiting-mobile-confirm');
+    }
+
+    await import('./components/GameboyDesign.js');
+    await customElements.whenDefined('exported-content');
 
     // 1. Initialize DOM references
     DOM.init();
@@ -71,8 +131,9 @@ customElements.whenDefined('exported-content').then(async () => {
     // 6. Initialize keybinds
     Keybinds.init();
 
-    // 7. Show mobile warning early on page load
-    UI.maybeShowMobileWarningOnLoad();
+    if (isMobile) {
+        State.set('mobileWarningShown', true);
+    }
 
     // 8. Scan ROMs
     const roms = await scanROMs();
@@ -84,4 +145,8 @@ customElements.whenDefined('exported-content').then(async () => {
             hideGameboyLoader();
         });
     });
+}
+
+bootstrap().catch((error) => {
+    console.error('Game Boy bootstrap failed:', error);
 });
