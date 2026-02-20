@@ -50,7 +50,16 @@ class UIManager {
 
         // Re-center selected card on window resize
         this._resizeObserver = new ResizeObserver(() => {
-            this.updateMenuSelection();
+            if (State.get('currentMode') !== 'menu') return;
+
+            if (this._resizeSelectionRAF !== null) {
+                cancelAnimationFrame(this._resizeSelectionRAF);
+            }
+
+            this._resizeSelectionRAF = requestAnimationFrame(() => {
+                this._resizeSelectionRAF = null;
+                this.updateMenuSelection(true);
+            });
         });
         const carouselParent = DOM.carousel?.parentElement;
         if (carouselParent) {
@@ -226,7 +235,7 @@ class UIManager {
             }
             // Re-center carousel when menu becomes visible
             requestAnimationFrame(() => {
-                this.updateMenuSelection();
+                this.updateMenuSelection(true);
             });
         }
 
@@ -271,7 +280,9 @@ class UIManager {
         DOM.carousel.appendChild(infoCard);
 
         // Trigger centering after cards are rendered
-        this.updateMenuSelection();
+        this._lastSelectedIndex = -1;
+        this._lastSelectedAction = -1;
+        this.updateMenuSelection(true);
     }
 
     createCheatCard(index) {
@@ -760,7 +771,9 @@ class UIManager {
         return card;
     }
 
-    updateMenuSelection() {
+    updateMenuSelection(force = false) {
+        if (State.get('currentMode') !== 'menu') return;
+
         const cards = DOM.carousel?.querySelectorAll('.rom-card');
         if (!cards || cards.length === 0) return;
 
@@ -773,54 +786,60 @@ class UIManager {
             return;
         }
 
-        // Update card states first
-        cards.forEach((card, index) => {
-            const isSelected = index === selectedIndex;
-            card.dataset.selected = isSelected ? 'true' : 'false';
+        const previousIndex = this._lastSelectedIndex;
+        const previousAction = this._lastSelectedAction;
 
-            // Reset active state on all buttons
-            card.querySelectorAll('.card-btn').forEach(btn => {
+        if (!force && previousIndex === selectedIndex && previousAction === selectedAction) {
+            return;
+        }
+
+        if (previousIndex >= 0 && cards[previousIndex]) {
+            const previousCard = cards[previousIndex];
+            previousCard.dataset.selected = 'false';
+            previousCard.querySelectorAll('.card-btn').forEach(btn => {
                 btn.dataset.active = 'false';
             });
+        }
 
-            if (isSelected) {
-                const activeBtn = this.getButtonAtIndex(card, selectedAction);
-                if (activeBtn) activeBtn.dataset.active = 'true';
-            }
+        const selectedCard = cards[selectedIndex];
+        if (!selectedCard) return;
+
+        selectedCard.dataset.selected = 'true';
+        selectedCard.querySelectorAll('.card-btn').forEach(btn => {
+            btn.dataset.active = 'false';
         });
+        const activeBtn = this.getButtonAtIndex(selectedCard, selectedAction);
+        if (activeBtn) activeBtn.dataset.active = 'true';
 
-        // Hide carousel during positioning to prevent visual jump
-        // (Removed to fix visibility issues)
+        this._lastSelectedIndex = selectedIndex;
+        this._lastSelectedAction = selectedAction;
 
-        // Wait for CSS transform to be applied, then center VERTICALLY
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                const selectedCard = cards[selectedIndex];
-                const carouselContainer = DOM.carousel?.parentElement;
+        if (this._menuSelectionRAF !== null) {
+            cancelAnimationFrame(this._menuSelectionRAF);
+        }
 
-                if (selectedCard && DOM.carousel && carouselContainer) {
-                    const containerCenter = carouselContainer.offsetHeight / 2;
-                    const cardOffsetTop = selectedCard.offsetTop;
-                    const cardHeight = selectedCard.offsetHeight;
-                    const cardCenter = cardOffsetTop + (cardHeight / 2);
-                    const translateY = containerCenter - cardCenter;
+        this._menuSelectionRAF = requestAnimationFrame(() => {
+            this._menuSelectionRAF = null;
 
-                    DOM.carousel.style.transform = `translateY(${translateY}px)`;
+            const carouselContainer = DOM.carousel?.parentElement;
+            if (!selectedCard || !DOM.carousel || !carouselContainer) return;
 
-                    // Always show carousel after positioning
-                    DOM.carousel.style.opacity = '1';
+            const containerCenter = carouselContainer.offsetHeight / 2;
+            const cardOffsetTop = selectedCard.offsetTop;
+            const cardHeight = selectedCard.offsetHeight;
+            const cardCenter = cardOffsetTop + (cardHeight / 2);
+            const translateY = containerCenter - cardCenter;
 
-                    // Pause the game after carousel positioning is complete
-                    // Only if we're in menu mode, game is loaded, and emulator is actually playing
-                    if (State.get('currentMode') === 'menu' && State.get('isGameLoaded')) {
-                        if (typeof window.pause === 'function' && typeof window.GameBoyEmulatorPlaying === 'function') {
-                            if (window.GameBoyEmulatorPlaying()) {
-                                window.pause();
-                            }
-                        }
+            DOM.carousel.style.transform = `translateY(${translateY}px)`;
+            DOM.carousel.style.opacity = '1';
+
+            if (State.get('currentMode') === 'menu' && State.get('isGameLoaded')) {
+                if (typeof window.pause === 'function' && typeof window.GameBoyEmulatorPlaying === 'function') {
+                    if (window.GameBoyEmulatorPlaying()) {
+                        window.pause();
                     }
                 }
-            });
+            }
         });
     }
 
@@ -895,6 +914,10 @@ class UIManager {
     }
 
     isKeysModeEnabled = false;
+    _menuSelectionRAF = null;
+    _resizeSelectionRAF = null;
+    _lastSelectedIndex = -1;
+    _lastSelectedAction = -1;
 
     setKeysMode(enabled) {
         this.isKeysModeEnabled = enabled;

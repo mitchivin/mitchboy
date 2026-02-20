@@ -1,6 +1,9 @@
 "use strict";
 var gameboy = null;						//GameBoyCore object.
 var gbRunInterval = null;				//GameBoyCore Timer
+var gbRunRAF = null;					//GameBoyCore rAF handle
+var gbRAFAccumulator = 0;				//Accumulated elapsed ms for fixed-step emulation
+var gbRAFLastTimestamp = 0;			//Last rAF timestamp
 var settings = [						//Some settings.
 	true, 								//Turn on sound.
 	true,								//Boot with boot ROM first?
@@ -29,6 +32,89 @@ function cout(message, level) {
 	}
 }
 
+function isDocumentVisible() {
+	return !document.hidden && !document.msHidden && !document.mozHidden && !document.webkitHidden;
+}
+
+function shouldUseRAFScheduler() {
+	var ua = navigator.userAgent || "";
+	var uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(ua);
+	var uaDataMobile = navigator.userAgentData && navigator.userAgentData.mobile === true;
+	var touchPoints = (navigator.maxTouchPoints || 0) > 0;
+	var coarsePointer = false;
+	try {
+		coarsePointer = typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+	}
+	catch (error) {
+		coarsePointer = false;
+	}
+	return (uaMobile || uaDataMobile || (touchPoints && coarsePointer)) && typeof window.requestAnimationFrame === "function";
+}
+
+function runWithRAF() {
+	var emulationStep = Math.max(1, settings[6] | 0);
+	gbRAFAccumulator = 0;
+	gbRAFLastTimestamp = 0;
+
+	var tick = function (timestamp) {
+		if (!GameBoyEmulatorInitialized() || !GameBoyEmulatorPlaying()) {
+			gbRunRAF = null;
+			return;
+		}
+
+		if (gbRAFLastTimestamp === 0) {
+			gbRAFLastTimestamp = timestamp;
+		}
+
+		if (!isDocumentVisible()) {
+			gbRAFAccumulator = 0;
+			gbRAFLastTimestamp = timestamp;
+			gbRunRAF = window.requestAnimationFrame(tick);
+			return;
+		}
+
+		var delta = timestamp - gbRAFLastTimestamp;
+		gbRAFLastTimestamp = timestamp;
+
+		if (delta > 250) {
+			delta = 250;
+		}
+
+		gbRAFAccumulator += delta;
+
+		var maxCatchUpSteps = 4;
+		var steps = 0;
+		while (gbRAFAccumulator >= emulationStep && steps < maxCatchUpSteps) {
+			gameboy.run();
+			gbRAFAccumulator -= emulationStep;
+			++steps;
+		}
+
+		if (steps >= maxCatchUpSteps) {
+			gbRAFAccumulator = 0;
+		}
+
+		gbRunRAF = window.requestAnimationFrame(tick);
+	};
+
+	gbRunRAF = window.requestAnimationFrame(tick);
+}
+
+function stopSchedulers() {
+	if (gbRunInterval) {
+		clearInterval(gbRunInterval);
+		gbRunInterval = null;
+	}
+	if (gbRunRAF) {
+		if (typeof window.cancelAnimationFrame === "function") {
+			window.cancelAnimationFrame(gbRunRAF);
+		}
+		gbRunRAF = null;
+	}
+	gbRAFAccumulator = 0;
+	gbRAFLastTimestamp = 0;
+}
+
 function start(canvas, ROM) {
 	clearLastEmulation();
 	autoSave();	//If we are about to load a new game, then save the last one...
@@ -46,11 +132,18 @@ function run() {
 			var dateObj = new Date();
 			gameboy.firstIteration = dateObj.getTime();
 			gameboy.iterations = 0;
-			gbRunInterval = setInterval(function () {
-				if (!document.hidden && !document.msHidden && !document.mozHidden && !document.webkitHidden) {
-					gameboy.run();
-				}
-			}, settings[6]);
+
+			stopSchedulers();
+			if (shouldUseRAFScheduler()) {
+				runWithRAF();
+			}
+			else {
+				gbRunInterval = setInterval(function () {
+					if (isDocumentVisible()) {
+						gameboy.run();
+					}
+				}, settings[6]);
+			}
 		}
 		else {
 			cout("The GameBoy core is already running.", 1);
@@ -76,7 +169,7 @@ function pause() {
 }
 function clearLastEmulation() {
 	if (GameBoyEmulatorInitialized() && GameBoyEmulatorPlaying()) {
-		clearInterval(gbRunInterval);
+		stopSchedulers();
 		gameboy.stopEmulator |= 2;
 		cout("The previous emulation has been cleared.", 0);
 		if (gameboy.canvas) {
