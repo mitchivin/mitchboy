@@ -1,10 +1,8 @@
 # Game Boy Color Emulator
 
-<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/13412c94-cb83-4434-ba7b-f3d3c1720175" />
-
 ---
 
-### [Launch Game Boy](https://mitchivin.github.io/gameboy/)
+<img width="1400" height="910" alt="gitgbc4" src="https://github.com/user-attachments/assets/5bb5da1f-c019-46d4-890c-1c1a69eb5ee6" />
 
 ---
 
@@ -42,7 +40,7 @@ The emulator core, menu system, and all input handling are built directly onto t
 - **Keys Overlay**: Toggle key labels on/off. All game input is blocked while the overlay is active.
 - **Responsive Layout**: Scales to any viewport. Shows a mobile warning on small screens.
 
-<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/16b95645-1c49-4206-8f06-bcdf0fada719" />
+<img width="1400" height="910" alt="gitgbc2" src="https://github.com/user-attachments/assets/87578791-680d-4ddc-8d2f-4fdc2b2a4f34" />
 
 ## Project Structure
 
@@ -81,7 +79,7 @@ Place `.gb` and `.gbc` files inside `src/renderer/games/` and add an entry to `m
 ]
 ```
 
-<img width="2559" height="1079" alt="image" src="https://github.com/user-attachments/assets/cf036ffd-303d-450e-84cb-a59d363eb631" />
+<img width="1400" height="910" alt="gitgbc3" src="https://github.com/user-attachments/assets/1871c9ef-29dd-4caf-834b-0cf580d99d09" />
 
 ## Running Locally
 
