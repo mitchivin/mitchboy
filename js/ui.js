@@ -115,14 +115,23 @@ class UIManager {
         const speed = State.get('currentSpeed');
         const volume = State.get('currentVolume');
         const keys = this.isKeysModeEnabled;
+        const isMobile = this.isMobile();
 
-        DOM.footer.innerHTML = `
-            <span>KEYS <span class="keys-btn footer-interactive">${keys ? 'ON' : 'OFF'}</span></span>
-            <span class="sep secondary">·</span>
-            <span><span class="speed-btn footer-interactive">${speed}x</span> SPEED</span>
-            <span class="sep secondary">·</span>
-            <span><span class="volume-btn footer-interactive">${volume}%</span> VOLUME</span>
-        `;
+        if (isMobile) {
+            DOM.footer.innerHTML = `
+                <span><span class="speed-btn footer-interactive">${speed}x</span> SPEED</span>
+                <span class="sep secondary">·</span>
+                <span><span class="volume-btn footer-interactive">${volume}%</span> VOLUME</span>
+            `;
+        } else {
+            DOM.footer.innerHTML = `
+                <span>KEYS <span class="keys-btn footer-interactive">${keys ? 'ON' : 'OFF'}</span></span>
+                <span class="sep secondary">·</span>
+                <span><span class="speed-btn footer-interactive">${speed}x</span> SPEED</span>
+                <span class="sep secondary">·</span>
+                <span><span class="volume-btn footer-interactive">${volume}%</span> VOLUME</span>
+            `;
+        }
 
         // Bind interactive elements
         const keysBtn = DOM.footer.querySelector('.keys-btn');

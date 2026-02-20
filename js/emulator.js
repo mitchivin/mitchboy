@@ -7,6 +7,37 @@ import { State } from './state.js';
 import { DOM } from './dom.js';
 
 class EmulatorManager {
+    unlockAudio() {
+        const resumeIfNeeded = (context) => {
+            if (!context || typeof context.resume !== 'function') return;
+            if (context.state && context.state !== 'suspended') return;
+            try {
+                const result = context.resume();
+                if (result && typeof result.catch === 'function') {
+                    result.catch(() => {});
+                }
+            } catch {
+                // Ignore unlock errors; we'll retry on next user gesture.
+            }
+        };
+
+        // Legacy core globals from XAudioServer.js
+        resumeIfNeeded(window.XAudioJSWebAudioContextHandle);
+
+        // Runtime handles if already created
+        resumeIfNeeded(window.gameboy?.audioHandle?.audioContext);
+        resumeIfNeeded(window.gameboy?.audioHandle?.context);
+        resumeIfNeeded(window.gameboy?.audioHandle?._context);
+
+        // Retry once after start() in case context is created asynchronously.
+        setTimeout(() => {
+            resumeIfNeeded(window.XAudioJSWebAudioContextHandle);
+            resumeIfNeeded(window.gameboy?.audioHandle?.audioContext);
+            resumeIfNeeded(window.gameboy?.audioHandle?.context);
+            resumeIfNeeded(window.gameboy?.audioHandle?._context);
+        }, 150);
+    }
+
     init() {
         // Wait for GameBoy core to load
         setTimeout(() => {
@@ -49,6 +80,8 @@ class EmulatorManager {
     }
 
     loadFromFile(file) {
+        this.unlockAudio();
+
         const reader = new FileReader();
         reader.onload = (e) => {
             const title = file.name.replace(/\.gbc?$/i, '');
@@ -61,6 +94,8 @@ class EmulatorManager {
     }
 
     loadFromPath(filePath) {
+        this.unlockAudio();
+
         // Treat anything that isn't a Windows absolute path as a web URL
         const isAbsoluteWindowsPath = /^[A-Za-z]:[/\\]/.test(filePath);
         const isURL = !isAbsoluteWindowsPath;
@@ -127,6 +162,7 @@ class EmulatorManager {
                 window.start(DOM.screen, romString);
                 State.set('isGameLoaded', true);
                 this.restoreSettings();
+                this.unlockAudio();
 
                 if (typeof window.initNewCanvas === 'function') {
                     window.initNewCanvas();
