@@ -196,6 +196,17 @@ button.item {
   #select.btn-pressed .btn-moving-part {
     transition: none !important;
   }
+
+  #a:active .btn-moving-part,
+  #b:active .btn-moving-part,
+  #a.btn-pressed .btn-moving-part,
+  #b.btn-pressed .btn-moving-part,
+  #a:active #txt-a,
+  #b:active #txt-b,
+  #a.btn-pressed #txt-a,
+  #b.btn-pressed #txt-b {
+    transform: none !important;
+  }
 }
 
 .grill-dot {
