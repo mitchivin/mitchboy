@@ -233,7 +233,7 @@ button.item {
     border-radius: 4px;
     font-size: 13px;
     font-weight: 1000;
-    pointer-events: auto !important; /* Force auto so clicks reach the rebind listener */
+    pointer-events: none;
     z-index: 100;
     white-space: nowrap;
     border: 1px solid rgba(255, 255, 255, 0.4);

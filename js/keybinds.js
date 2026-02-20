@@ -30,6 +30,7 @@ class KeybindManager {
 
         // State for rebinding
         this.waitingForKey = null;
+        this.keysModeEnabled = false;
     }
 
     loadKeybinds() {
@@ -146,6 +147,8 @@ class KeybindManager {
     }
 
     startRebind(button) {
+        if (!this.keysModeEnabled) return;
+
         if (this.waitingForKey) {
             this.cancelRebind();
         }
@@ -243,6 +246,7 @@ class KeybindManager {
             labels.forEach(label => {
                 label.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    if (!this.keysModeEnabled) return;
                     const button = label.dataset.button;
                     if (button) {
                         this.startRebind(button);
@@ -253,6 +257,13 @@ class KeybindManager {
     }
 
     init() {
+        window.addEventListener('keys-mode-changed', (event) => {
+            this.keysModeEnabled = Boolean(event?.detail?.enabled);
+            if (!this.keysModeEnabled) {
+                this.cancelRebind();
+            }
+        });
+
         // Wait a tick for Shadow DOM to be ready
         setTimeout(() => {
             this.updateAllTooltips();

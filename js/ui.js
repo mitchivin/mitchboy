@@ -960,6 +960,7 @@ class UIManager {
 
     setKeysMode(enabled) {
         this.isKeysModeEnabled = enabled;
+        window.dispatchEvent(new CustomEvent('keys-mode-changed', { detail: { enabled } }));
 
         // Show/hide keyboard shortcut labels inside the Shadow DOM component
         const component = document.querySelector('exported-content');
@@ -967,6 +968,7 @@ class UIManager {
             const labels = component.shadowRoot.querySelectorAll('.key-internal-label');
             labels.forEach(label => {
                 label.style.opacity = enabled ? '1' : '0';
+                label.style.pointerEvents = enabled ? 'auto' : 'none';
             });
         }
 
