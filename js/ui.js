@@ -73,7 +73,11 @@ class UIManager {
         const isMobile = this.isMobile();
 
         if (mode !== 'rom') {
-            DOM.header.innerHTML = `<span>Game Boy by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>`;
+            DOM.header.innerHTML = `
+                <span><a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">Preset 1</a></span>
+                <span class="sep">|</span>
+                <span>Game Boy</span>
+            `;
             return;
         }
 
@@ -112,7 +116,7 @@ class UIManager {
 
         if (mode !== 'rom') {
             DOM.footer.innerHTML = `
-                <span>Designed in <a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">doodledev</a></span>
+                <span>by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>
             `;
             return;
         }
