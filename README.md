@@ -19,7 +19,7 @@ The Game Boy shell was designed in **[DoodleDev](https://doodledev.app)**, a vis
 
 DoodleDev provides a clean visual foundation for production engineering. Instead of using AI to guess at a layout, this project starts with a pixel-perfect, zero-dependency export that is easy to adjust manually.
 
-The emulator core, menu system, and all input handling are built directly onto the DoodleDev export across nine JavaScript modules:
+The emulator core, menu system, and all input handling are split across nine JavaScript modules:
 
 | Module | Responsibility |
 |---|---|
