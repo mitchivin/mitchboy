@@ -24,9 +24,7 @@ function isDevEnvironment() {
     return host === 'localhost' || host === '127.0.0.1' || host === '::1' || window.location.protocol === 'file:';
 }
 
-function setupDevChromeToggle() {
-    if (!isDevEnvironment()) return;
-
+function setupChromeToggle() {
     window.addEventListener('keydown', (e) => {
         const target = e.target;
         const isTypingTarget = target && (
@@ -98,7 +96,7 @@ function showPreloadMobileWarning() {
 }
 
 async function bootstrap() {
-    setupDevChromeToggle();
+    setupChromeToggle();
 
     const isMobile = isMobileDevice();
 
