@@ -24,6 +24,25 @@ body {
   touch-action: none;
 }
 
+/* ── Cutting Mat Theme (Toggled) ────────────────────────── */
+body.bg-cutting-mat {
+  background:
+    /* Top sheen & Ambient glows */
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(34, 197, 94, 0.12), transparent 85%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(34, 197, 94, 0.12), transparent 85%),
+    /* Major Precision Grid (100px) - Bolder for visibility */
+    linear-gradient(rgba(134, 239, 172, 0.2) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(134, 239, 172, 0.2) 2px, transparent 2px),
+    /* Minor Precision Grid (10px) - Higher contrast */
+    linear-gradient(rgba(134, 239, 172, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(134, 239, 172, 0.08) 1px, transparent 1px),
+    /* Forest Green Cutting Mat Base */
+    linear-gradient(180deg, #082c1a 0%, #04150d 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100px 100px, 100px 100px, 10px 10px, 10px 10px, 100% 100%;
+  background-position: center center;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -33,21 +52,20 @@ body::before {
   background:
     radial-gradient(ellipse 42% 58% at 2% 50%, rgba(34, 197, 94, 0.08), transparent 76%),
     radial-gradient(ellipse 42% 58% at 98% 50%, rgba(16, 185, 129, 0.08), transparent 76%);
+  transition: opacity 0.3s ease;
+}
+
+body.bg-cutting-mat::before {
+  opacity: 0;
 }
 
 #gameboy-container {
   position: relative;
   z-index: 1;
-  --base-width: min(calc(100vw - 80px), calc((100dvh - 120px) * 0.591391));
+  --base-width: min(calc(100vw - 80px), calc((100dvh - 120px) * 0.5819892473));
   width: var(--base-width);
   flex-shrink: 0;
   display: block;
-}
-
-#gameboy-component {
-  display: block;
-  width: 100%;
-  height: auto;
 }
 
 body.dev-chrome-hidden {
@@ -66,7 +84,7 @@ body.dev-chrome-hidden .doodle-disclaimer {
 }
 
 body.dev-chrome-hidden #gameboy-container {
-  --base-width: min(calc(100vw - 80px), calc((100dvh - 320px) * 0.591391));
+  --base-width: min(calc(100vw - 80px), calc((100dvh - 320px) * 0.5819892473));
 }
 
 body.app-loading #gameboy-container {
@@ -130,6 +148,7 @@ body.awaiting-mobile-confirm #app-shell-loader {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -321,11 +340,11 @@ body.awaiting-mobile-confirm #app-shell-loader {
   }
 
   #gameboy-container {
-    --base-width: min(calc(100vw - 20px), calc((100dvh - 120px) * 0.591391));
+    --base-width: min(calc(100vw - 20px), calc((100dvh - 120px) * 0.5819892473));
   }
 
   body.dev-chrome-hidden #gameboy-container {
-    --base-width: min(calc(100vw - 20px), calc((100dvh - 240px) * 0.591391));
+    --base-width: min(calc(100vw - 20px), calc((100dvh - 240px) * 0.5819892473));
   }
 
   .doodle-disclaimer .secondary {
@@ -456,19 +475,24 @@ body.awaiting-mobile-confirm #app-shell-loader {
 }
 
 @keyframes cheatShake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   20% {
     transform: translateX(-7px);
   }
+
   40% {
     transform: translateX(7px);
   }
+
   60% {
     transform: translateX(-5px);
   }
+
   80% {
     transform: translateX(5px);
   }
@@ -479,7 +503,7 @@ body.awaiting-mobile-confirm #app-shell-loader {
   overflow: hidden;
 }
 
-.cheat-hint-active > * {
+.cheat-hint-active>* {
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -543,4 +567,3 @@ body.awaiting-mobile-confirm #app-shell-loader {
   letter-spacing: 0.06em;
   cursor: pointer;
 }
-

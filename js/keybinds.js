@@ -111,12 +111,9 @@ class KeybindManager {
     }
 
     updateTooltip(button) {
-        const component = document.querySelector('exported-content');
-        if (component?.shadowRoot) {
-            const label = component.shadowRoot.querySelector(`.key-internal-label[data-button="${button}"]`);
-            if (label) {
-                label.textContent = this.formatKeyName(this.getKey(button));
-            }
+        const label = document.querySelector(`.key-internal-label[data-button="${button}"]`);
+        if (label) {
+            label.textContent = this.formatKeyName(this.getKey(button));
         }
     }
 
@@ -154,25 +151,19 @@ class KeybindManager {
         }
 
         this.waitingForKey = button;
-        const component = document.querySelector('exported-content');
-        if (component?.shadowRoot) {
-            const label = component.shadowRoot.querySelector(`.key-internal-label[data-button="${button}"]`);
-            if (label) {
-                label.style.background = 'rgba(34, 197, 94, 0.9)';
-                label.textContent = '...';
-            }
+        const label = document.querySelector(`.key-internal-label[data-button="${button}"]`);
+        if (label) {
+            label.style.background = 'rgba(34, 197, 94, 0.9)';
+            label.textContent = '...';
         }
     }
 
     cancelRebind() {
         if (this.waitingForKey) {
-            const component = document.querySelector('exported-content');
-            if (component?.shadowRoot) {
-                const label = component.shadowRoot.querySelector(`.key-internal-label[data-button="${this.waitingForKey}"]`);
-                if (label) {
-                    label.style.background = '';
-                    this.updateTooltip(this.waitingForKey);
-                }
+            const label = document.querySelector(`.key-internal-label[data-button="${this.waitingForKey}"]`);
+            if (label) {
+                label.style.background = '';
+                this.updateTooltip(this.waitingForKey);
             }
             this.waitingForKey = null;
         }
@@ -218,42 +209,35 @@ class KeybindManager {
         this.waitingForKey = null;
         const ok = this.setKey(button, key);
 
-        const component = document.querySelector('exported-content');
-        if (component?.shadowRoot) {
-            const label = component.shadowRoot.querySelector(`.key-internal-label[data-button="${button}"]`);
-            if (label) label.style.background = '';
-        }
+        const label = document.querySelector(`.key-internal-label[data-button="${button}"]`);
+        if (label) label.style.background = '';
+        
 
         if (!ok) this.updateTooltip(button); // revert display if setKey refused
         return true;
     }
 
     #flashLabel(button, color) {
-        const component = document.querySelector('exported-content');
-        if (!component?.shadowRoot) return;
-        const label = component.shadowRoot.querySelector(`.key-internal-label[data-button="${button}"]`);
+        const label = document.querySelector(`.key-internal-label[data-button="${button}"]`);
         if (!label) return;
         label.style.background = color;
         setTimeout(() => {
-            label.style.background = 'rgba(34, 197, 94, 0.9)'; // back to green (still waiting)
+            label.style.background = 'rgba(34, 197, 94, 0.9)';
         }, 400);
     }
 
     setupTooltipListeners() {
-        const component = document.querySelector('exported-content');
-        if (component?.shadowRoot) {
-            const labels = component.shadowRoot.querySelectorAll('.key-internal-label');
-            labels.forEach(label => {
-                label.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (!this.keysModeEnabled) return;
-                    const button = label.dataset.button;
-                    if (button) {
-                        this.startRebind(button);
-                    }
-                });
+        const labels = document.querySelectorAll('.key-internal-label');
+        labels.forEach(label => {
+            label.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!this.keysModeEnabled) return;
+                const button = label.dataset.button;
+                if (button) {
+                    this.startRebind(button);
+                }
             });
-        }
+        });
     }
 
     init() {
@@ -264,11 +248,7 @@ class KeybindManager {
             }
         });
 
-        // Cancel any in-progress rebind when an overlay takes focus
-        window.addEventListener('cheat-overlay-opened', () => this.cancelRebind());
-        window.addEventListener('mobile-warning-opened', () => this.cancelRebind());
-
-        // Wait a tick for Shadow DOM to be ready
+        // Wait a tick for DOM to be ready
         setTimeout(() => {
             this.updateAllTooltips();
             this.setupTooltipListeners();

@@ -432,9 +432,9 @@ class UIManager {
 
     _startCheatHint(sequence) {
         const arrowSVG = {
-            up:    `<svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor"><polygon points="7,0 14,12 0,12"/></svg>`,
-            down:  `<svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor"><polygon points="7,12 14,0 0,0"/></svg>`,
-            left:  `<svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><polygon points="0,7 12,0 12,14"/></svg>`,
+            up: `<svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor"><polygon points="7,0 14,12 0,12"/></svg>`,
+            down: `<svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor"><polygon points="7,12 14,0 0,0"/></svg>`,
+            left: `<svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><polygon points="0,7 12,0 12,14"/></svg>`,
             right: `<svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><polygon points="12,7 0,0 0,14"/></svg>`,
         };
         const symbolMap = { a: 'A', b: 'B', select: 'SEL', start: 'STR' };
@@ -582,7 +582,7 @@ class UIManager {
         // Delay to ensure all startup listeners are attached before opening.
         setTimeout(() => {
             if (!document.querySelector('#mobile-warning-overlay')) {
-                this.openMobileWarning(() => {});
+                this.openMobileWarning(() => { });
             }
         }, 0);
     }
@@ -607,46 +607,9 @@ class UIManager {
     }
 
     openMobileWarning(onConfirm) {
-        // Prevent duplicates
-        if (document.querySelector('#mobile-warning-overlay')) return;
-
-        // Mark as shown immediately so it only appears once per page load.
         State.set('mobileWarningShown', true);
-
-        const overlay = document.createElement('div');
-        overlay.id = 'mobile-warning-overlay';
-        overlay.innerHTML = `
-            <div class="mobile-warning-box">
-                <div class="mobile-warning-title">MOBILE WARNING</div>
-                <div class="mobile-warning-text">
-                    This emulator may run poorly on mobile and audio can stutter.
-                </div>
-                <div class="mobile-warning-actions">
-                    <button class="mobile-warning-btn mobile-warning-btn-proceed">PROCEED</button>
-                    <button class="mobile-warning-btn mobile-warning-btn-cancel">CANCEL</button>
-                </div>
-            </div>
-        `;
-
-        // Append to body so it covers the full viewport, not just the GameBoy screen
-        document.body.appendChild(overlay);
-        this._mobileWarningOnConfirm = onConfirm;
-
-        // Force reflow for transition
-        overlay.offsetHeight;
-        overlay.classList.add('visible');
-
-        window.dispatchEvent(new CustomEvent('mobile-warning-opened'));
-
-        overlay.querySelector('.mobile-warning-btn-proceed').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.closeMobileWarning(true);
-        });
-
-        overlay.querySelector('.mobile-warning-btn-cancel').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.closeMobileWarning(false);
-        });
+        if (onConfirm) onConfirm();
+        return;
     }
 
     createUploadCard(index) {
@@ -998,15 +961,12 @@ class UIManager {
         this.isKeysModeEnabled = enabled;
         window.dispatchEvent(new CustomEvent('keys-mode-changed', { detail: { enabled } }));
 
-        // Show/hide keyboard shortcut labels inside the Shadow DOM component
-        const component = document.querySelector('exported-content');
-        if (component?.shadowRoot) {
-            const labels = component.shadowRoot.querySelectorAll('.key-internal-label');
-            labels.forEach(label => {
-                label.style.opacity = enabled ? '1' : '0';
-                label.style.pointerEvents = enabled ? 'auto' : 'none';
-            });
-        }
+        // Show/hide keyboard shortcut labels
+        const labels = document.querySelectorAll('.key-internal-label');
+        labels.forEach(label => {
+            label.style.opacity = enabled ? '1' : '0';
+            label.style.pointerEvents = enabled ? 'auto' : 'none';
+        });
 
         this._updateFooterStats();
     }

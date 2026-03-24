@@ -1,0 +1,184 @@
+/* Gameboy Component Styles - formerly in Shadow DOM */
+
+#gameboy-component {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 0.5819892473;
+  width: 100%;
+  height: auto;
+}
+
+#gameboy-component .item {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  contain: layout style;
+}
+
+#gameboy-component button.item {
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+#gameboy-component .shape {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+#gameboy-component .text {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow: visible;
+  text-align: center;
+}
+
+/* Interactions & Animations */
+#a, #b, #start, #select,
+#up, #down, #left, #right, #mid {
+  pointer-events: auto !important;
+  cursor: pointer;
+  transition: opacity 0.2s ease, filter 0.2s ease, fill 0.2s ease;
+}
+
+#a:active .btn-moving-part,
+#b:active .btn-moving-part,
+#a:active #a-butt,
+#b:active #b-butt,
+#a.btn-pressed .btn-moving-part,
+#b.btn-pressed .btn-moving-part,
+#a.btn-pressed #a-butt,
+#b.btn-pressed #b-butt {
+  transform: scale(0.96);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.05s ease;
+}
+
+.active-fill {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+}
+
+#a:active .active-fill,
+#b:active .active-fill,
+#start:active .active-fill,
+#select:active .active-fill,
+#a.btn-pressed .active-fill,
+#b.btn-pressed .active-fill,
+#start.btn-pressed .active-fill,
+#select.btn-pressed .active-fill {
+  opacity: 1;
+  transition: opacity 0.05s ease-out;
+}
+
+#start:active .btn-moving-part, #select:active .btn-moving-part,
+#start.btn-pressed .btn-moving-part, #select.btn-pressed .btn-moving-part {
+  transform: scale(0.95);
+  transform-origin: center;
+  transition: transform 0.05s ease;
+}
+
+#up::before, #down::before, #left::before, #right::before {
+  content: '';
+  position: absolute;
+  top: -25%;
+  left: -25%;
+  right: -25%;
+  bottom: -25%;
+  pointer-events: auto;
+}
+
+#power-light {
+  pointer-events: none !important;
+}
+
+#scr-glare {
+  display: none !important;
+}
+
+@keyframes led-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
+  80% { opacity: 0.95; }
+}
+
+.led-on {
+  filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.8)) contrast(140%) saturate(110%) !important;
+  animation: led-flicker 0.1s infinite;
+}
+
+.led-on-menu {
+  filter: drop-shadow(0 0 4px rgba(255, 180, 0, 0.8)) contrast(140%) saturate(110%) !important;
+  animation: led-flicker 0.12s infinite;
+}
+
+@media (pointer: coarse) {
+  .led-on,
+  .led-on-menu {
+    animation: none;
+  }
+  #a, #b, #start, #select,
+  #up, #down, #left, #right, #mid,
+  .active-fill,
+  #a:active .btn-moving-part,
+  #b:active .btn-moving-part,
+  #a.btn-pressed .btn-moving-part,
+  #b.btn-pressed .btn-moving-part,
+  #start:active .btn-moving-part,
+  #select:active .btn-moving-part,
+  #start.btn-pressed .btn-moving-part,
+  #select.btn-pressed .btn-moving-part {
+    transition: none !important;
+  }
+  #a:active .btn-moving-part,
+  #b:active .btn-moving-part,
+  #a.btn-pressed .btn-moving-part,
+  #b.btn-pressed .btn-moving-part,
+  #a:active #a-butt,
+  #b:active #b-butt,
+  #a.btn-pressed #a-butt,
+  #b.btn-pressed #b-butt {
+    transform: none !important;
+  }
+}
+
+.key-internal-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 1000;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+}

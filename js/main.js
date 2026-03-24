@@ -24,7 +24,9 @@ function isDevEnvironment() {
     return host === 'localhost' || host === '127.0.0.1' || host === '::1' || window.location.protocol === 'file:';
 }
 
-function setupChromeToggle() {
+function setupDevChromeToggle() {
+    if (!isDevEnvironment()) return;
+
     window.addEventListener('keydown', (e) => {
         const target = e.target;
         const isTypingTarget = target && (
@@ -37,6 +39,11 @@ function setupChromeToggle() {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
             e.preventDefault();
             document.body.classList.toggle('dev-chrome-hidden');
+        }
+
+        if (e.ctrlKey && e.shiftKey && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            document.body.classList.toggle('bg-cutting-mat');
         }
     });
 }
@@ -96,19 +103,13 @@ function showPreloadMobileWarning() {
 }
 
 async function bootstrap() {
-    setupChromeToggle();
+    setupDevChromeToggle();
 
     const isMobile = isMobileDevice();
 
-    if (!isMobile) {
-        document.body.classList.remove('awaiting-mobile-confirm');
-    } else {
-        await showPreloadMobileWarning();
-        document.body.classList.remove('awaiting-mobile-confirm');
-    }
+    document.body.classList.remove('awaiting-mobile-confirm');
 
-    await import('./components/GameboyDesign.js');
-    await customElements.whenDefined('exported-content');
+    // Gameboy design is now inline HTML — no custom element needed
 
     // 1. Initialize DOM references
     DOM.init();
