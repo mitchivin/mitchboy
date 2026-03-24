@@ -260,7 +260,7 @@ class UIManager {
 
             if (DOM.romContainer) {
                 DOM.romContainer.classList.remove('hidden');
-                DOM.romContainer.style.display = 'flex'; // Force display (was set to none by mountToShadow)
+                DOM.romContainer.style.display = 'flex'; // Force display (was set to none by mountContainers)
                 DOM.romContainer.style.pointerEvents = 'auto';
             }
             if (DOM.menuContainer) {
@@ -697,7 +697,7 @@ class UIManager {
         const imageName = title.toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric with single dash
             .replace(/^-+|-+$/g, '');      // Remove leading/trailing dashes
-        const imagePath = `public/${imageName}.png`;
+        const imagePath = `public/covers/${imageName}.png`;
 
         card.innerHTML = `
             <div class="rom-card-body">

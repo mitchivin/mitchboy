@@ -1,4 +1,6 @@
-/* Gameboy Component Styles - formerly in Shadow DOM */
+/**
+ * Gameboy shell styles — interactions, animations, LED, key labels.
+ */
 
 #gameboy-component {
   position: relative;
@@ -31,19 +33,6 @@
   overflow: visible;
 }
 
-#gameboy-component .text {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  line-height: 1.4;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  overflow: visible;
-  text-align: center;
-}
-
 /* Interactions & Animations */
 #a, #b, #start, #select,
 #up, #down, #left, #right, #mid {
@@ -60,7 +49,7 @@
 #b.btn-pressed .btn-moving-part,
 #a.btn-pressed #a-butt,
 #b.btn-pressed #b-butt {
-  transform: scale(0.96);
+  transform: scale(0.98);
   transform-box: fill-box;
   transform-origin: center;
   transition: transform 0.05s ease;
@@ -72,12 +61,8 @@
   pointer-events: none;
 }
 
-#a:active .active-fill,
-#b:active .active-fill,
 #start:active .active-fill,
 #select:active .active-fill,
-#a.btn-pressed .active-fill,
-#b.btn-pressed .active-fill,
 #start.btn-pressed .active-fill,
 #select.btn-pressed .active-fill {
   opacity: 1;
@@ -133,25 +118,19 @@
   #a, #b, #start, #select,
   #up, #down, #left, #right, #mid,
   .active-fill,
-  #a:active .btn-moving-part,
-  #b:active .btn-moving-part,
-  #a.btn-pressed .btn-moving-part,
-  #b.btn-pressed .btn-moving-part,
   #start:active .btn-moving-part,
   #select:active .btn-moving-part,
   #start.btn-pressed .btn-moving-part,
   #select.btn-pressed .btn-moving-part {
     transition: none !important;
   }
-  #a:active .btn-moving-part,
-  #b:active .btn-moving-part,
-  #a.btn-pressed .btn-moving-part,
-  #b.btn-pressed .btn-moving-part,
   #a:active #a-butt,
   #b:active #b-butt,
   #a.btn-pressed #a-butt,
   #b.btn-pressed #b-butt {
-    transform: none !important;
+    transform: scale(0.98);
+    transform-origin: center;
+    transition: none !important;
   }
 }
 

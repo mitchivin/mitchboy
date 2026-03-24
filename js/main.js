@@ -1,6 +1,5 @@
 /**
- * Main entry point - orchestrates initialization
- * Clean, linear startup sequence
+ * Main entry point — orchestrates app initialization.
  */
 
 import { DOM } from './dom.js';
@@ -50,95 +49,33 @@ function setupDevChromeToggle() {
 
 function hideGameboyLoader() {
     const loader = document.getElementById('app-shell-loader');
-
     document.body.classList.remove('app-loading');
-
     if (!loader) return;
-
     loader.classList.add('is-hidden');
-    setTimeout(() => {
-        loader.remove();
-    }, 260);
-}
-
-function showPreloadMobileWarning() {
-    return new Promise((resolve) => {
-        const existing = document.querySelector('#mobile-warning-overlay');
-        if (existing) {
-            resolve(true);
-            return;
-        }
-
-        const overlay = document.createElement('div');
-        overlay.id = 'mobile-warning-overlay';
-        overlay.innerHTML = `
-            <div class="mobile-warning-box">
-                <div class="mobile-warning-title">MOBILE WARNING</div>
-                <div class="mobile-warning-text">
-                    This emulator may run poorly on mobile and audio can stutter.
-                </div>
-                <div class="mobile-warning-actions">
-                    <button class="mobile-warning-btn mobile-warning-btn-proceed">PROCEED</button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(overlay);
-        overlay.offsetHeight;
-        overlay.classList.add('visible');
-
-        const close = () => {
-            overlay.classList.remove('visible');
-            setTimeout(() => {
-                overlay.remove();
-                resolve(true);
-            }, 300);
-        };
-
-        overlay.querySelector('.mobile-warning-btn-proceed')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            close();
-        });
-    });
+    setTimeout(() => loader.remove(), 260);
 }
 
 async function bootstrap() {
     setupDevChromeToggle();
 
     const isMobile = isMobileDevice();
-
     document.body.classList.remove('awaiting-mobile-confirm');
 
-    // Gameboy design is now inline HTML — no custom element needed
-
-    // 1. Initialize DOM references
     DOM.init();
-    DOM.mountToShadow();
-
-    // 2. Initialize state
+    DOM.mountContainers();
     State.init();
-
-    // 3. Initialize UI
     UI.init();
-
-    // 4. Initialize emulator
     Emulator.init();
-
-    // 5. Initialize input handlers
     Input.init();
-
-    // 6. Initialize keybinds
     Keybinds.init();
 
     if (isMobile) {
         State.set('mobileWarningShown', true);
     }
 
-    // 8. Scan ROMs
     const roms = await scanROMs();
     State.set('romList', roms);
 
-    // 9. Reveal shell after first stable paint
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             hideGameboyLoader();
@@ -146,6 +83,6 @@ async function bootstrap() {
     });
 }
 
-bootstrap().catch((error) => {
-    console.error('Game Boy bootstrap failed:', error);
+bootstrap().catch((err) => {
+    console.error('Bootstrap failed:', err);
 });
