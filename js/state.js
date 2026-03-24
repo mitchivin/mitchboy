@@ -13,6 +13,7 @@ class StateManager {
             selectedActionIndex: 0,
             romList: [],
             romsUnlocked: false,
+            immersiveMode: false,
             currentSpeed: 1.0,
             currentVolume: 100,
             mobileWarningShown: false,

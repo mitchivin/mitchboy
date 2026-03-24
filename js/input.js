@@ -15,10 +15,14 @@ class InputManager {
 
         // Cheat code tracking
         this.cheatSequence = ['up', 'down', 'left', 'right', 'b', 'down', 'up'];
-        this.cheatBuffer = []; // Accumulates all inputs before comparing
-        this.isCheatInputMode = false; // True when user is actively entering the cheat
+        this.cheatBuffer = [];
+        this.isCheatInputMode = false;
         this.isMobileWarningMode = false;
         this.selectHeld = false;
+
+        // Immersive mode cheat — tracked separately, works in any mode
+        this.immersiveSequence = ['up', 'up', 'up', 'up', 'up', 'up', 'up'];
+        this.immersiveBuffer = [];
     }
 
     init() {
@@ -109,6 +113,9 @@ class InputManager {
             if (isPressed) {
                 // Visual feedback for d-pad
                 this.applyDpadVisuals(direction, true);
+
+                // Track immersive mode sequence on every up press
+                this.feedImmersiveInput(direction);
 
                 if (currentMode === 'menu') {
                     if (this.isMobileWarningMode) {
@@ -366,6 +373,9 @@ class InputManager {
                     return;
                 }
 
+                // Track immersive mode sequence
+                this.feedImmersiveInput(direction);
+
                 if (this.isCheatInputMode) {
                     this.feedCheatInput(direction);
                 } else {
@@ -373,6 +383,7 @@ class InputManager {
                 }
             }
         } else if (currentMode === 'rom') {
+            if (isPressed) this.feedImmersiveInput(direction);
             const keyMap = {
                 'up': 38,
                 'down': 40,
@@ -455,6 +466,29 @@ class InputManager {
                 UI.closeCheatOverlay();
             }
         }
+    }
+
+    feedImmersiveInput(input) {
+        if (!State.get('romsUnlocked')) return;
+        if (!UI.isMobile()) return;
+
+        if (input === 'up') {
+            this.immersiveBuffer.push(input);
+        } else {
+            this.immersiveBuffer = [];
+            return;
+        }
+
+        if (this.immersiveBuffer.length === this.immersiveSequence.length) {
+            this.immersiveBuffer = [];
+            this.toggleImmersiveMode();
+        }
+    }
+
+    toggleImmersiveMode() {
+        const current = State.get('immersiveMode');
+        State.set('immersiveMode', !current);
+        document.body.classList.toggle('immersive-mode', !current);
     }
 
     activateCheatCode() {

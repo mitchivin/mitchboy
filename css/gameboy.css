@@ -2,6 +2,23 @@
  * Gameboy shell styles — interactions, animations, LED, key labels.
  */
 
+/* Prevent all touch interaction artifacts on the gameboy shell */
+#gameboy-component {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#gameboy-component img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
 #gameboy-component {
   position: relative;
   min-width: 0;
