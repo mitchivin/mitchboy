@@ -469,9 +469,6 @@ class InputManager {
     }
 
     feedImmersiveInput(input) {
-        if (!State.get('romsUnlocked')) return;
-        if (!UI.isMobile()) return;
-
         if (input === 'up') {
             this.immersiveBuffer.push(input);
         } else {
