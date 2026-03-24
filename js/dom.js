@@ -39,14 +39,19 @@ export const DOM = {
         this.screen           = document.getElementById('gameboy-screen');
 
         this.buttons = {
-            a:      document.getElementById('a'),
-            b:      document.getElementById('b'),
-            start:  document.getElementById('start'),
-            select: document.getElementById('select'),
+            a:            document.getElementById('a'),
+            b:            document.getElementById('b'),
+            start:        document.getElementById('start'),
+            select:       document.getElementById('select'),
+            aHitarea:     document.getElementById('a-hitarea'),
+            bHitarea:     document.getElementById('b-hitarea'),
+            startHitarea: document.getElementById('start-hitarea'),
+            selectHitarea:document.getElementById('select-hitarea'),
         };
 
         this.dpad = {
             container: document.getElementById('dpad'),
+            hitarea:   document.getElementById('dpad-hitarea'),
             up:        document.getElementById('up'),
             down:      document.getElementById('down'),
             left:      document.getElementById('left'),

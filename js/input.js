@@ -15,14 +15,10 @@ class InputManager {
 
         // Cheat code tracking
         this.cheatSequence = ['up', 'down', 'left', 'right', 'b', 'down', 'up'];
-        this.cheatBuffer = [];
-        this.isCheatInputMode = false;
+        this.cheatBuffer = []; // Accumulates all inputs before comparing
+        this.isCheatInputMode = false; // True when user is actively entering the cheat
         this.isMobileWarningMode = false;
         this.selectHeld = false;
-
-        // Immersive mode cheat — tracked separately, works in any mode
-        this.immersiveSequence = ['up', 'up', 'up', 'up', 'up', 'up', 'up'];
-        this.immersiveBuffer = [];
     }
 
     init() {
@@ -113,9 +109,6 @@ class InputManager {
             if (isPressed) {
                 // Visual feedback for d-pad
                 this.applyDpadVisuals(direction, true);
-
-                // Track immersive mode sequence on every up press
-                this.feedImmersiveInput(direction);
 
                 if (currentMode === 'menu') {
                     if (this.isMobileWarningMode) {
@@ -260,26 +253,35 @@ class InputManager {
     setupButtons() {
         if (!DOM.buttons) return;
 
-        Object.entries(DOM.buttons).forEach(([name, button]) => {
+        const bind = (name, button) => {
             if (!button) return;
-
             button.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                button.setPointerCapture(e.pointerId);
                 this.handleButtonPress(name, true);
             });
-
             button.addEventListener('pointerup', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.handleButtonPress(name, false);
             });
-
-            button.addEventListener('pointerleave', (e) => {
+            button.addEventListener('pointercancel', (e) => {
                 e.stopPropagation();
                 this.handleButtonPress(name, false);
             });
-        });
+        };
+
+        bind('a', DOM.buttons.a);
+        bind('b', DOM.buttons.b);
+        bind('start', DOM.buttons.start);
+        bind('select', DOM.buttons.select);
+
+        // Hit area overlays for A and B — forward to the same handler
+        bind('a', DOM.buttons.aHitarea);
+        bind('b', DOM.buttons.bHitarea);
+        bind('start',  DOM.buttons.startHitarea);
+        bind('select', DOM.buttons.selectHitarea);
     }
 
     handleButtonPress(buttonName, isPressed) {
@@ -331,31 +333,60 @@ class InputManager {
     }
 
     setupDpad() {
-        if (!DOM.dpad) return;
+        const hitarea = DOM.dpad?.hitarea;
+        if (!hitarea) return;
 
-        const directions = ['up', 'down', 'left', 'right'];
+        // Single overlay covers the whole dpad. On pointer down/move we calculate
+        // which quadrant was hit using the pointer position relative to the centre.
+        // Diagonal threshold: if |x| and |y| are both > 20% of half-width we pick
+        // the dominant axis, so corners still register cleanly.
 
-        directions.forEach(direction => {
-            const element = DOM.dpad[direction];
-            if (!element) return;
+        let activeDirection = null;
 
-            element.addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                e.stopPropagation(); // Stop event from bubbling
-                this.handleDpadPress(direction, true);
-            });
+        const getDirection = (e) => {
+            const rect = hitarea.getBoundingClientRect();
+            const cx = rect.left + rect.width  / 2;
+            const cy = rect.top  + rect.height / 2;
+            const dx = e.clientX - cx;
+            const dy = e.clientY - cy;
 
-            element.addEventListener('pointerup', (e) => {
-                e.preventDefault();
-                e.stopPropagation(); // Stop event from bubbling
-                this.handleDpadPress(direction, false);
-            });
+            // Dead zone — ignore taps right on the centre
+            if (Math.abs(dx) < rect.width * 0.08 && Math.abs(dy) < rect.height * 0.08) return null;
 
-            element.addEventListener('pointerleave', (e) => {
-                e.stopPropagation(); // Stop event from bubbling
-                this.handleDpadPress(direction, false);
-            });
+            // Pick dominant axis
+            return Math.abs(dx) > Math.abs(dy)
+                ? (dx > 0 ? 'right' : 'left')
+                : (dy > 0 ? 'down'  : 'up');
+        };
+
+        hitarea.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            hitarea.setPointerCapture(e.pointerId);
+            const dir = getDirection(e);
+            if (!dir) return;
+            activeDirection = dir;
+            this.handleDpadPress(dir, true);
         });
+
+        hitarea.addEventListener('pointermove', (e) => {
+            if (!activeDirection) return;
+            e.preventDefault();
+            const dir = getDirection(e);
+            if (!dir || dir === activeDirection) return;
+            // Direction changed — release old, press new
+            this.handleDpadPress(activeDirection, false);
+            activeDirection = dir;
+            this.handleDpadPress(dir, true);
+        });
+
+        const release = (e) => {
+            if (!activeDirection) return;
+            this.handleDpadPress(activeDirection, false);
+            activeDirection = null;
+        };
+
+        hitarea.addEventListener('pointerup',     release);
+        hitarea.addEventListener('pointercancel', release);
     }
 
     handleDpadPress(direction, isPressed) {
@@ -373,9 +404,6 @@ class InputManager {
                     return;
                 }
 
-                // Track immersive mode sequence
-                this.feedImmersiveInput(direction);
-
                 if (this.isCheatInputMode) {
                     this.feedCheatInput(direction);
                 } else {
@@ -383,7 +411,6 @@ class InputManager {
                 }
             }
         } else if (currentMode === 'rom') {
-            if (isPressed) this.feedImmersiveInput(direction);
             const keyMap = {
                 'up': 38,
                 'down': 40,
@@ -466,26 +493,6 @@ class InputManager {
                 UI.closeCheatOverlay();
             }
         }
-    }
-
-    feedImmersiveInput(input) {
-        if (input === 'up') {
-            this.immersiveBuffer.push(input);
-        } else {
-            this.immersiveBuffer = [];
-            return;
-        }
-
-        if (this.immersiveBuffer.length === this.immersiveSequence.length) {
-            this.immersiveBuffer = [];
-            this.toggleImmersiveMode();
-        }
-    }
-
-    toggleImmersiveMode() {
-        const current = State.get('immersiveMode');
-        State.set('immersiveMode', !current);
-        document.body.classList.toggle('immersive-mode', !current);
     }
 
     activateCheatCode() {

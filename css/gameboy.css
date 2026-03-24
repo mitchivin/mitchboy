@@ -51,11 +51,19 @@
 }
 
 /* Interactions & Animations */
-#a, #b, #start, #select,
-#up, #down, #left, #right, #mid {
+#a, #b, #start, #select {
   pointer-events: auto !important;
   cursor: pointer;
   transition: opacity 0.2s ease, filter 0.2s ease, fill 0.2s ease;
+}
+
+#up, #down, #left, #right, #mid {
+  pointer-events: none !important;
+}
+
+#dpad-hitarea {
+  pointer-events: auto !important;
+  cursor: pointer;
 }
 
 #a:active .btn-moving-part,
@@ -93,20 +101,6 @@
   transition: transform 0.05s ease;
 }
 
-#up::before, #down::before, #left::before, #right::before {
-  content: '';
-  position: absolute;
-  top: -25%;
-  left: -25%;
-  right: -25%;
-  bottom: -25%;
-  pointer-events: auto;
-}
-
-#power-light {
-  pointer-events: none !important;
-}
-
 #scr-glare {
   display: none !important;
 }
@@ -133,7 +127,6 @@
     animation: none;
   }
   #a, #b, #start, #select,
-  #up, #down, #left, #right, #mid,
   .active-fill,
   #start:active .btn-moving-part,
   #select:active .btn-moving-part,

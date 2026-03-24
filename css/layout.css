@@ -87,21 +87,6 @@ body.dev-chrome-hidden #gameboy-container {
   --base-width: min(calc(100vw - 80px), calc((100dvh - 320px) * 0.5819892473));
 }
 
-/* ── Immersive Mode (cheat: 7x up) ─────────────────────── */
-body.immersive-mode {
-  padding: 0;
-  justify-content: center;
-}
-
-body.immersive-mode .blueprint-header,
-body.immersive-mode .doodle-disclaimer {
-  display: none;
-}
-
-body.immersive-mode #gameboy-container {
-  --base-width: min(100vw, calc(100dvh * 0.5819892473));
-}
-
 body.app-loading #gameboy-container {
   visibility: hidden;
 }

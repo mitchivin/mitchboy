@@ -162,13 +162,6 @@
             <feMergeNode in="sh"></feMergeNode>
           </feMerge>
         </filter>
-        <filter id="shadow-only-pill" filterunits="userSpaceOnUse" x="-30" y="-30" width="93.38" height="74.2">
-          <feMorphology operator="dilate" radius="2.00" in="SourceAlpha" result="s_spread"></feMorphology>
-          <feGaussianBlur in="s_spread" stdDeviation="1.50" result="s_blur"></feGaussianBlur>
-          <feOffset in="s_blur" dx="0" dy="0" result="s_offset"></feOffset>
-          <feFlood flood-color="black" flood-opacity="1.00" result="s_color"></feFlood>
-          <feComposite in="s_color" in2="s_offset" operator="in" result="shadow_out"></feComposite>
-        </filter>
       </defs>
     </svg>
 
@@ -227,6 +220,7 @@
             </g>
           </svg>
         </div>
+        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;touch-action:none;cursor:pointer;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
       </section>
 
       <!-- B BUTTON -->
@@ -245,6 +239,7 @@
           </svg>
         </div>
       </button>
+      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
 
       <!-- A BUTTON -->
       <button class="item" id="a" style="height: 6.72043%; isolation: isolate; left: 77.8291%; top: 60.3495%; width: 12.8589%; z-index: 7">
@@ -262,6 +257,7 @@
           </svg>
         </div>
       </button>
+      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
 
       <!-- SCREEN -->
       <section class="item" id="screen" style="height: 46.5581%; isolation: isolate; left: 6.00462%; top: 3.76344%; width: 88.0083%; z-index: 3">
@@ -319,7 +315,7 @@
             </g>
           </svg>
         </button>
-        <div class="item" id="inset-start" style="height: 100%; left: 57.3009%; top: 0%; width: 42.6991%; z-index: 3">
+        <div class="item" id="inset-start" style="height: 100%; left: 57.3509%; top: 0%; width: 42.6991%; z-index: 3">
           <svg class="shape" viewBox="0 0 41.73 24.23" preserveAspectRatio="xMidYMid meet" width="41.73" height="24.23">
             <defs><path d="M 15.243 4.383 Q 21.03 3.617 26.486 4.383 C 29.824 4.851 37.73 6.955 37.73 12.1 C 37.73 17.245 29.795 19.165 26.486 19.817 Q 22.339 20.636 15.243 19.817 Q 4 17.888 4 12.1 Q 4 6.312 15.243 4.383 Z" id="path-27"></path></defs>
             <g>
@@ -333,7 +329,6 @@
           <svg class="shape" viewBox="0 0 37.49 20.04" preserveAspectRatio="xMidYMid meet" width="37.49" height="20.04">
             <defs><path id="path-select" d="M 13.121 2.291 Q 18.908 1.526 24.364 2.291 C 27.702 2.76 35.608 4.864 35.608 10.009 C 35.608 15.154 27.673 17.073 24.364 17.726 Q 20.216 18.545 13.121 17.726 Q 1.878 15.797 1.878 10.009 Q 1.878 4.221 13.121 2.291 Z"></path></defs>
             <g>
-              <use href="#path-select" filter="url(#shadow-only-pill)"></use>
               <g class="btn-moving-part">
                 <use class="fill-path" href="#path-select" fill="url(#shared-fill-11)" vector-effect="non-scaling-stroke"></use>
                 <use class="active-fill" href="#path-select" fill="url(#shared-fill-11)" vector-effect="non-scaling-stroke"></use>
@@ -346,7 +341,6 @@
           <svg class="shape" viewBox="0 0 37.49 20.04" preserveAspectRatio="xMidYMid meet" width="37.49" height="20.04">
             <defs><path id="path-start" d="M 13.121 2.291 Q 18.908 1.526 24.364 2.291 C 27.702 2.76 35.608 4.864 35.608 10.009 C 35.608 15.154 27.673 17.073 24.364 17.726 Q 20.216 18.545 13.121 17.726 Q 1.878 15.797 1.878 10.009 Q 1.878 4.221 13.121 2.291 Z"></path></defs>
             <g>
-              <use href="#path-start" filter="url(#shadow-only-pill)"></use>
               <g class="btn-moving-part">
                 <use class="fill-path" href="#path-start" fill="url(#shared-fill-11)" vector-effect="non-scaling-stroke"></use>
                 <use class="active-fill" href="#path-start" fill="url(#shared-fill-11)" vector-effect="non-scaling-stroke"></use>
@@ -357,6 +351,10 @@
       </section>
 
       <div class="key-internal-label" style="top: 91%; left: 50%; width: auto; height: 28px; padding: 0 8px; pointer-events: none; cursor: default; transform: translate(-50%, -50%); white-space: nowrap; font-size: 11px;">TAB · MENU / GAME</div>
+
+      <!-- START/SELECT HIT AREAS -->
+      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
+      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
     </div><!-- end #gameboy-component -->
   </div><!-- end #gameboy-container -->
 

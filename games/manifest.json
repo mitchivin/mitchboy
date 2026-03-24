@@ -2,5 +2,21 @@
     {
         "name": "Super Mario Bros. Deluxe",
         "url": "games/Super Mario Bros. Deluxe.gbc"
+    },
+    {
+        "name": "Mario Golf",
+        "url": "games/Mario Golf.gbc"
+    },
+    {
+        "name": "Mario Tennis",
+        "url": "games/Mario Tennis.gbc"
+    },
+    {
+        "name": "Pokemon Crystal",
+        "url": "games/Pokemon Crystal.gbc"
+    },
+    {
+        "name": "Rampage World Tour",
+        "url": "games/Rampage World Tour.gbc"
     }
 ]
