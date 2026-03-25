@@ -2,6 +2,26 @@
  * Main entry point — orchestrates app initialization.
  */
 
+// ── Prevent ALL zoom/pan on mobile (runs immediately, before anything else) ──
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - (document._lastTouchEnd || 0) <= 300) e.preventDefault();
+    document._lastTouchEnd = now;
+}, { passive: false });
+
+document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+// ── End zoom prevention ──
+
 import { DOM } from './dom.js';
 import { State } from './state.js';
 import { UI } from './ui.js';
@@ -56,24 +76,6 @@ function hideGameboyLoader() {
 }
 
 async function bootstrap() {
-    // Prevent double-tap zoom on all mobile browsers including Safari
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) e.preventDefault();
-        lastTouchEnd = now;
-    }, { passive: false });
-
-    // Prevent pinch zoom on Safari (gesturestart/gesturechange are Safari-specific)
-    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
-    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
-    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
-
-    // Prevent pinch zoom on Chrome/Firefox via touchmove with multiple touches
-    document.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
-
     setupDevChromeToggle();
 
     const isMobile = isMobileDevice();
