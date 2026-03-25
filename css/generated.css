@@ -765,6 +765,7 @@ video {
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   background-color: #a8a29e;
+  touch-action: none;
 }
 
 /* ── Menu Screen ───────────────────────────────────────────── */

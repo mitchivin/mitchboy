@@ -253,33 +253,28 @@ class InputManager {
     setupButtons() {
         if (!DOM.buttons) return;
 
-        const bind = (name, button) => {
-            if (!button) return;
-            button.addEventListener('pointerdown', (e) => {
+        const bind = (name, element) => {
+            if (!element) return;
+            element.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                button.setPointerCapture(e.pointerId);
+                element.setPointerCapture(e.pointerId);
                 this.handleButtonPress(name, true);
             });
-            button.addEventListener('pointerup', (e) => {
+            element.addEventListener('pointerup', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.handleButtonPress(name, false);
             });
-            button.addEventListener('pointercancel', (e) => {
+            element.addEventListener('pointercancel', (e) => {
                 e.stopPropagation();
                 this.handleButtonPress(name, false);
             });
         };
 
-        bind('a', DOM.buttons.a);
-        bind('b', DOM.buttons.b);
-        bind('start', DOM.buttons.start);
-        bind('select', DOM.buttons.select);
-
-        // Hit area overlays for A and B — forward to the same handler
-        bind('a', DOM.buttons.aHitarea);
-        bind('b', DOM.buttons.bHitarea);
+        // All input comes through hit area overlays
+        bind('a',      DOM.buttons.aHitarea);
+        bind('b',      DOM.buttons.bHitarea);
         bind('start',  DOM.buttons.startHitarea);
         bind('select', DOM.buttons.selectHitarea);
     }
