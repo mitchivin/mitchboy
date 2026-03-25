@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <title>Game Boy Emulator</title>
   <meta name="description"
     content="Interactive Game Boy emulator for the web with custom keybinds, save/load states, speed and volume controls, and a retro handheld UI.">
@@ -220,7 +220,7 @@
             </g>
           </svg>
         </div>
-        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;touch-action:none;cursor:pointer;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
+        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;cursor:pointer;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
       </section>
 
       <!-- B BUTTON -->
@@ -239,7 +239,7 @@
           </svg>
         </div>
       </button>
-      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
+      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
 
       <!-- A BUTTON -->
       <button class="item" id="a" style="height: 6.72043%; isolation: isolate; left: 77.8291%; top: 60.3495%; width: 12.8589%; z-index: 7">
@@ -257,7 +257,7 @@
           </svg>
         </div>
       </button>
-      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
+      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
 
       <!-- SCREEN -->
       <section class="item" id="screen" style="height: 46.5581%; isolation: isolate; left: 6.00462%; top: 3.76344%; width: 88.0083%; z-index: 3">
@@ -353,8 +353,8 @@
       <div class="key-internal-label" style="top: 91%; left: 50%; width: auto; height: 28px; padding: 0 8px; pointer-events: none; cursor: default; transform: translate(-50%, -50%); white-space: nowrap; font-size: 11px;">TAB · MENU / GAME</div>
 
       <!-- START/SELECT HIT AREAS -->
-      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
-      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;touch-action:none;cursor:pointer;"></div>
+      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
+      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
     </div><!-- end #gameboy-component -->
   </div><!-- end #gameboy-container -->
 

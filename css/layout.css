@@ -21,7 +21,7 @@ body {
   align-items: center;
   font-family: 'Source Sans 3', sans-serif;
   position: relative;
-  touch-action: none;
+  touch-action: manipulation;
 }
 
 /* ── Cutting Mat Theme (Toggled) ────────────────────────── */
