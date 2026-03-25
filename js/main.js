@@ -64,6 +64,16 @@ async function bootstrap() {
         lastTouchEnd = now;
     }, { passive: false });
 
+    // Prevent pinch zoom on Safari (gesturestart/gesturechange are Safari-specific)
+    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+
+    // Prevent pinch zoom on Chrome/Firefox via touchmove with multiple touches
+    document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+
     setupDevChromeToggle();
 
     const isMobile = isMobileDevice();
