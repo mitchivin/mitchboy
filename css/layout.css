@@ -2,6 +2,7 @@ html {
   height: 100%;
   height: 100dvh;
   touch-action: none;
+  overflow: hidden;
 }
 
 body {
@@ -67,6 +68,7 @@ body.bg-cutting-mat::before {
   width: var(--base-width);
   flex-shrink: 0;
   display: block;
+  overflow: hidden;
 }
 
 body.dev-chrome-hidden {
