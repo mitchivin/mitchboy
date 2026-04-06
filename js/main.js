@@ -9,6 +9,7 @@ import { Emulator } from './emulator.js';
 import { Input } from './input.js';
 import { Keybinds } from './keybinds.js';
 import { scanROMs } from './romScanner.js';
+import { initZoomPrevention } from './zoomPrevention.js';
 
 function isMobileDevice() {
     const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(navigator.userAgent || '');
@@ -56,6 +57,7 @@ function hideGameboyLoader() {
 }
 
 async function bootstrap() {
+    initZoomPrevention();
     setupDevChromeToggle();
 
     const isMobile = isMobileDevice();

@@ -1,7 +1,6 @@
 html {
   height: 100%;
   height: 100dvh;
-  touch-action: none;
   overflow: hidden;
 }
 
@@ -23,7 +22,6 @@ body {
   align-items: center;
   font-family: 'Source Sans 3', sans-serif;
   position: relative;
-  touch-action: none;
 }
 
 /* ── Cutting Mat Theme (Toggled) ────────────────────────── */
@@ -200,7 +198,6 @@ body.awaiting-mobile-confirm #app-shell-loader {
   user-select: none;
   z-index: 100;
   pointer-events: auto;
-  touch-action: none;
 }
 
 .corner-top-left {
