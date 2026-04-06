@@ -12,7 +12,6 @@
   -webkit-touch-callout: none;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none;
 }
 
 #gameboy-component img {
@@ -39,20 +38,22 @@
 }
 
 /* ── Hit areas ── */
-#dpad-hitarea,
-#a-hitarea,
-#b-hitarea,
-#start-hitarea,
-#select-hitarea {
+#gameboy-component #dpad,
+#gameboy-component #a,
+#gameboy-component #b,
+#gameboy-component #start,
+#gameboy-component #select {
   pointer-events: auto !important;
-  opacity: 0 !important;
-  -webkit-user-drag: none !important;
-  background: transparent !important;
+  touch-action: manipulation;
 }
 
-/* ── Button visuals (A, B, start, select are divs — hit areas handle input) ── */
-#a, #b, #start, #select {
-  pointer-events: none !important;
+/* ── Button visuals now handle input directly ── */
+#gameboy-component #a,
+#gameboy-component #b,
+#gameboy-component #start,
+#gameboy-component #select {
+  pointer-events: auto !important;
+  touch-action: manipulation;
 }
 
 #up, #down, #left, #right, #mid {

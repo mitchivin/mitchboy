@@ -272,11 +272,11 @@ class InputManager {
             });
         };
 
-        // All input comes through hit area overlays
-        bind('a',      DOM.buttons.aHitarea);
-        bind('b',      DOM.buttons.bHitarea);
-        bind('start',  DOM.buttons.startHitarea);
-        bind('select', DOM.buttons.selectHitarea);
+        // All input comes through visible buttons
+        bind('a',      DOM.buttons.a);
+        bind('b',      DOM.buttons.b);
+        bind('start',  DOM.buttons.start);
+        bind('select', DOM.buttons.select);
     }
 
     handleButtonPress(buttonName, isPressed) {
@@ -328,8 +328,8 @@ class InputManager {
     }
 
     setupDpad() {
-        const hitarea = DOM.dpad?.hitarea;
-        if (!hitarea) return;
+        const dpad = DOM.dpad?.container;
+        if (!dpad) return;
 
         // Single overlay covers the whole dpad. On pointer down/move we calculate
         // which quadrant was hit using the pointer position relative to the centre.
@@ -339,7 +339,7 @@ class InputManager {
         let activeDirection = null;
 
         const getDirection = (e) => {
-            const rect = hitarea.getBoundingClientRect();
+            const rect = dpad.getBoundingClientRect();
             const cx = rect.left + rect.width  / 2;
             const cy = rect.top  + rect.height / 2;
             const dx = e.clientX - cx;
@@ -354,16 +354,16 @@ class InputManager {
                 : (dy > 0 ? 'down'  : 'up');
         };
 
-        hitarea.addEventListener('pointerdown', (e) => {
+        dpad.addEventListener('pointerdown', (e) => {
             e.preventDefault();
-            hitarea.setPointerCapture(e.pointerId);
+            dpad.setPointerCapture(e.pointerId);
             const dir = getDirection(e);
             if (!dir) return;
             activeDirection = dir;
             this.handleDpadPress(dir, true);
         });
 
-        hitarea.addEventListener('pointermove', (e) => {
+        dpad.addEventListener('pointermove', (e) => {
             if (!activeDirection) return;
             e.preventDefault();
             const dir = getDirection(e);
@@ -380,8 +380,8 @@ class InputManager {
             activeDirection = null;
         };
 
-        hitarea.addEventListener('pointerup',     release);
-        hitarea.addEventListener('pointercancel', release);
+        dpad.addEventListener('pointerup',     release);
+        dpad.addEventListener('pointercancel', release);
     }
 
     handleDpadPress(direction, isPressed) {

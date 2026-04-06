@@ -51,7 +51,6 @@ export const DOM = {
 
         this.dpad = {
             container: document.getElementById('dpad'),
-            hitarea:   document.getElementById('dpad-hitarea'),
             up:        document.getElementById('up'),
             down:      document.getElementById('down'),
             left:      document.getElementById('left'),
