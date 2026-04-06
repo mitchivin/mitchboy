@@ -45,7 +45,6 @@
 #start-hitarea,
 #select-hitarea {
   pointer-events: auto !important;
-  touch-action: none !important;
   opacity: 0 !important;
   -webkit-user-drag: none !important;
   background: transparent !important;

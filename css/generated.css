@@ -508,15 +508,6 @@ textarea::placeholder {
 }
 
 /*
-Set the default cursor for buttons.
-*/
-
-button,
-[role="button"] {
-  touch-action: manipulation;
-}
-
-/*
 Make sure disabled buttons don't get the pointer cursor.
 */
 
@@ -765,7 +756,6 @@ video {
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
   background-color: #a8a29e;
-  touch-action: none;
 }
 
 /* ── Menu Screen ───────────────────────────────────────────── */
