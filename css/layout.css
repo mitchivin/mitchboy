@@ -2,11 +2,13 @@ html {
   height: 100%;
   height: 100dvh;
   overflow: hidden;
-  touch-action: none;
+  touch-action: manipulation;
+  position: fixed;
+  width: 100%;
 }
 
 *, *::before, *::after {
-    touch-action: none;
+    touch-action: manipulation;
 }
 
 body {
@@ -15,6 +17,8 @@ body {
   margin: 0;
   padding: 0 40px;
   overflow: hidden;
+  width: 100%;
+  touch-action: manipulation;
   background:
     radial-gradient(ellipse 58% 64% at -10% 52%, rgba(34, 197, 94, 0.18), transparent 70%),
     radial-gradient(ellipse 60% 66% at 110% 48%, rgba(16, 185, 129, 0.17), transparent 72%),
