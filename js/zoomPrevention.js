@@ -33,7 +33,19 @@ export function initZoomPrevention() {
         event.preventDefault();
     }, { passive: false });
 
-    // Prevent double-tap zoom
+    // Prevent double-tap zoom using touchstart (fires before iOS zoom starts)
+    let lastTouchStart = 0;
+    document.addEventListener('touchstart', (event) => {
+        const now = Date.now();
+        if (now - lastTouchStart <= 300) {
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+        }
+        lastTouchStart = now;
+    }, { passive: false });
+
+    // Backup: also prevent on touchend
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (event) => {
         const now = Date.now();
