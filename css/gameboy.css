@@ -44,8 +44,7 @@
 #start-hitarea,
 #select-hitarea {
   pointer-events: auto !important;
-  cursor: pointer;
-  touch-action: none;
+  touch-action: none !important;
 }
 
 /* ── Button visuals (A, B, start, select are divs — hit areas handle input) ── */
@@ -151,5 +150,6 @@
   font-family: 'Barlow Condensed', sans-serif;
   text-transform: uppercase;
   line-height: 1;
-  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }

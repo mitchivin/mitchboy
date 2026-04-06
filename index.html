@@ -53,15 +53,6 @@
   <style>
     ::-webkit-scrollbar { display: none; }
   </style>
-  <script>
-    // Prevent ALL zoom, pan, pinch, double-tap on mobile — must run before anything else
-    document.addEventListener('touchstart', function(e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-    document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
-    (function() { var last = 0; document.addEventListener('touchend', function(e) { var now = Date.now(); if (now - last <= 300) e.preventDefault(); last = now; }, { passive: false }); })();
-    document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
-    document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
-    document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
-  </script>
   <script src="js/core/resampler.js"></script>
   <script src="js/core/XAudioServer.js"></script>
   <script src="js/core/resize.js"></script>
@@ -178,7 +169,7 @@
     <div id="gameboy-component">
       <!-- BASE: SVG body from local file -->
       <div class="item" id="base" style="height: 100%; left: 0%; top: 0%; width: 100%; z-index: 2">
-        <img src="public/base.webp" alt="" style="width: 100%; height: 100%; display: block; object-fit: fill;">
+        <img src="public/base.webp" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: fill; pointer-events: none;">
       </div>
 
       <!-- D-PAD -->
@@ -229,7 +220,7 @@
             </g>
           </svg>
         </div>
-        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;cursor:pointer;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
+        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
       </section>
 
       <!-- B BUTTON -->
@@ -248,7 +239,7 @@
           </svg>
         </div>
       </div>
-      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
+      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;"></div>
 
       <!-- A BUTTON -->
       <div class="item" id="a" style="height: 6.72043%; isolation: isolate; left: 77.8291%; top: 60.3495%; width: 12.8589%; z-index: 7">
@@ -266,7 +257,7 @@
           </svg>
         </div>
       </div>
-      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
+      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;"></div>
 
       <!-- SCREEN -->
       <section class="item" id="screen" style="height: 46.5581%; isolation: isolate; left: 6.00462%; top: 3.76344%; width: 88.0083%; z-index: 3">
@@ -299,7 +290,7 @@
           </svg>
         </p>
         <div class="item" id="logo-gbc" style="height: 9.57416%; left: 20.6937%; opacity: 1; top: 82.791%; width: 58.6158%; z-index: 4">
-          <img src="public/icon.svg" alt="" style="width: 100%; height: 100%; display: block; object-fit: contain;">
+          <img src="public/icon.svg" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: contain; pointer-events: none;">
         </div>
         <div class="item" id="pwr-accent" style="height: 5.7738%; left: 7.65398%; top: 30.9677%; width: 6.69863%; z-index: 6">
           <svg class="shape" viewBox="0 0 25.53 20" preserveAspectRatio="xMidYMid meet" width="25.53" height="20">
@@ -362,8 +353,8 @@
       <div class="key-internal-label" style="top: 91%; left: 50%; width: auto; height: 28px; padding: 0 8px; pointer-events: none; cursor: default; transform: translate(-50%, -50%); white-space: nowrap; font-size: 11px;">TAB · MENU / GAME</div>
 
       <!-- START/SELECT HIT AREAS -->
-      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
-      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
+      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;"></div>
+      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;"></div>
     </div><!-- end #gameboy-component -->
   </div><!-- end #gameboy-container -->
 

@@ -66,12 +66,13 @@
   background: linear-gradient(180deg, rgba(6, 78, 59, 0.7) 0%, rgba(2, 44, 34, 0.8) 100%);
   border: 1px solid rgba(74, 222, 128, 0.3);
   border-radius: 8px;
-  cursor: pointer;
   position: relative;
   backdrop-filter: blur(12px);
   overflow: visible;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .rom-card[data-selected="true"] {
