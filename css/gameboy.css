@@ -45,6 +45,9 @@
 #select-hitarea {
   pointer-events: auto !important;
   touch-action: none !important;
+  opacity: 0 !important;
+  -webkit-user-drag: none !important;
+  background: transparent !important;
 }
 
 /* ── Button visuals (A, B, start, select are divs — hit areas handle input) ── */

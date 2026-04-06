@@ -2,11 +2,11 @@ html {
   height: 100%;
   height: 100dvh;
   overflow: hidden;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 *, *::before, *::after {
-    touch-action: manipulation;
+    touch-action: none;
 }
 
 body {
