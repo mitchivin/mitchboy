@@ -7,9 +7,9 @@ Live at [mitchivin.github.io/mitchboy](https://mitchivin.github.io/mitchboy/).
 The shell was designed in **[DoodleDev](https://doodledev.app)** and sits in the page as normal HTML/CSS. No framework, no runtime deps.
 
 <p align="center">
-  <img src="docs/screenshots/menu.png" alt="Mitch Boy Color in-device menu on a Game Boy Color style handheld" width="280" />
+  <img width="1920" height="1080" alt="mitchBoy1" src="https://github.com/user-attachments/assets/5f7eaa20-b05c-4847-93c5-61e714c81577" />
   &nbsp;
-  <img src="docs/screenshots/keys.png" alt="Mitch Boy Color custom keybind overlay" width="280" />
+  <img width="1920" height="1080" alt="mitchBoy2" src="https://github.com/user-attachments/assets/b2a8d2b3-9006-4cdb-a1a0-51a7ee37cb79" />
 </p>
 
 ## Features
