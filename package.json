@@ -1,0 +1,12 @@
+{
+  "name": "mitch-boy-color",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Mitch Boy Color - web Game Boy / Game Boy Color emulator with a handheld UI. Play .gb and .gbc ROMs in the browser.",
+  "license": "MIT",
+  "author": "Mitch Ivin",
+  "scripts": {
+    "start": "npx --yes serve ."
+  }
+}

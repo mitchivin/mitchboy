@@ -1,30 +1,44 @@
+*,
+*::before,
+*::after {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
 html {
   height: 100%;
   height: 100dvh;
+  touch-action: none;
   overflow: hidden;
-  position: fixed;
-  width: 100%;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   height: 100%;
   height: 100dvh;
   margin: 0;
-  padding: 0 40px;
+  padding: 28px;
   overflow: hidden;
-  width: 100%;
+  overscroll-behavior: none;
   background:
-    radial-gradient(ellipse 58% 64% at -10% 52%, rgba(34, 197, 94, 0.18), transparent 70%),
-    radial-gradient(ellipse 60% 66% at 110% 48%, rgba(16, 185, 129, 0.17), transparent 72%),
-    radial-gradient(circle at 18% 22%, rgba(110, 231, 183, 0.06), transparent 42%),
-    radial-gradient(circle at 82% 26%, rgba(74, 222, 128, 0.055), transparent 44%),
-    linear-gradient(180deg, #03140f 0%, #020a08 45%, #010403 100%);
+    radial-gradient(ellipse 62% 70% at -8% 52%, rgba(34, 197, 94, 0.09), transparent 78%),
+    radial-gradient(ellipse 64% 72% at 108% 48%, rgba(16, 185, 129, 0.08), transparent 80%),
+    radial-gradient(circle at 18% 22%, rgba(110, 231, 183, 0.03), transparent 48%),
+    radial-gradient(circle at 82% 26%, rgba(74, 222, 128, 0.025), transparent 50%),
+    linear-gradient(180deg, #02110c 0%, #010806 48%, #000302 100%);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   font-family: 'Source Sans 3', sans-serif;
   position: relative;
+  touch-action: none;
 }
 
 /* ── Cutting Mat Theme (Toggled) ────────────────────────── */
@@ -53,8 +67,8 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 42% 58% at 2% 50%, rgba(34, 197, 94, 0.08), transparent 76%),
-    radial-gradient(ellipse 42% 58% at 98% 50%, rgba(16, 185, 129, 0.08), transparent 76%);
+    radial-gradient(ellipse 48% 64% at 0% 50%, rgba(34, 197, 94, 0.04), transparent 82%),
+    radial-gradient(ellipse 48% 64% at 100% 50%, rgba(16, 185, 129, 0.04), transparent 82%);
   transition: opacity 0.3s ease;
 }
 
@@ -65,8 +79,11 @@ body.bg-cutting-mat::before {
 #gameboy-container {
   position: relative;
   z-index: 1;
-  --base-width: min(calc(100vw - 80px), calc((100dvh - 120px) * 0.5819892473));
+  /* Desktop: a bit more breathing room than the max-fill shell */
+  --base-width: min(calc(100vw - 100px), calc((100dvh - 100px) * 0.5819892473));
   width: var(--base-width);
+  /* Pin height from width — aspect-ratio alone re-rounds on first paint and can nudge 1px. */
+  height: calc(var(--base-width) / 0.5819892473);
   flex-shrink: 0;
   display: block;
   overflow: hidden;
@@ -74,29 +91,26 @@ body.bg-cutting-mat::before {
 
 body.dev-chrome-hidden {
   justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
 }
 
-body.rom-controls-active {
-  justify-content: center;
-}
-
-body.dev-chrome-hidden .blueprint-header,
-body.dev-chrome-hidden .doodle-disclaimer {
-  display: none;
-}
-
-body.dev-chrome-hidden #gameboy-container {
-  --base-width: min(calc(100vw - 80px), calc((100dvh - 320px) * 0.5819892473));
+/* Device reveal — menu button stays visible during boot */
+#gameboy-container {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.app-loading #gameboy-container {
-  visibility: hidden;
+  opacity: 0;
+  /* Opacity + slight rise only — scale re-snaps subpixel layout on reveal. */
+  transform: translateY(10px);
+  pointer-events: none;
 }
 
 #app-shell-loader {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 20000;
   display: none;
@@ -104,7 +118,7 @@ body.app-loading #gameboy-container {
   justify-content: center;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.24s ease;
+  transition: opacity 0.4s ease;
 }
 
 #app-shell-loader.is-hidden {
@@ -115,40 +129,17 @@ body.app-loading #app-shell-loader {
   display: flex;
 }
 
-body.awaiting-mobile-confirm #app-shell-loader {
-  display: none;
+.shell-boot-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(134, 239, 172, 0.16);
+  border-top-color: rgba(134, 239, 172, 0.95);
+  box-shadow: 0 0 22px rgba(74, 222, 128, 0.22);
+  animation: shellBootSpin 0.85s linear infinite;
 }
 
-.gameboy-loader-box {
-  border: 1px solid rgba(74, 222, 128, 0.45);
-  border-radius: 10px;
-  background: rgba(3, 17, 12, 0.92);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.gameboy-loader-spinner {
-  width: 14px;
-  height: 14px;
-  border-radius: 9999px;
-  border: 2px solid rgba(74, 222, 128, 0.28);
-  border-top-color: rgba(74, 222, 128, 1);
-  animation: gameboyLoaderSpin 0.9s linear infinite;
-}
-
-.gameboy-loader-text {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  color: #86efac;
-  text-transform: uppercase;
-}
-
-@keyframes gameboyLoaderSpin {
+@keyframes shellBootSpin {
   from {
     transform: rotate(0deg);
   }
@@ -158,414 +149,479 @@ body.awaiting-mobile-confirm #app-shell-loader {
   }
 }
 
-.blueprint-header,
-.doodle-disclaimer {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  text-transform: uppercase;
-  text-align: center;
-  cursor: default;
+/* ── Floating help (XP chromeless surgical glass) ──────────── */
+
+#shell-chrome {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: auto;
+  bottom: auto;
+  z-index: 300;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#shell-chrome.is-idle {
+  opacity: 0.4;
+}
+
+#shell-help,
+#shell-controls {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#shell-help-toggle,
+#shell-controls-toggle {
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
   margin: 0;
   padding: 0;
-  position: relative;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(8, 18, 14, 0.42);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.48;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+  transition:
+    opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#shell-help-toggle .material-symbols-outlined,
+#shell-controls-toggle .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 18px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+#shell-help-toggle:hover,
+#shell-help.is-open #shell-help-toggle,
+#shell-controls-toggle:hover,
+#shell-controls.is-open #shell-controls-toggle {
+  opacity: 1;
+  background: rgba(12, 26, 20, 0.88);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.32),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+#shell-help-toggle:active,
+#shell-controls-toggle:active {
+  background: rgba(16, 32, 24, 0.92);
+}
+
+#shell-help-panel,
+#shell-controls-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
   z-index: 1;
-  flex: 0 0 40px;
-  height: 40px;
+  box-sizing: border-box;
+  min-width: 204px;
+  max-width: min(260px, calc(100vw - 32px));
+  padding: 6px 0;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(6, 14, 11, 0.88);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+#shell-help-panel[hidden],
+#shell-controls-panel[hidden] {
+  display: none !important;
+}
+
+.shell-help-link,
+.shell-help-action {
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.shell-help-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.shell-help-subheader {
+  margin: 6px 0 2px;
+  padding: 4px 16px 2px;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  pointer-events: none;
+  user-select: none;
+}
+
+.shell-help-link,
+.shell-help-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shell-help-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 1;
+  color: currentColor;
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+.shell-help-icon.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shell-help-icon--github {
+  display: block;
+}
+
+.shell-help-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.shell-help-link:hover,
+.shell-help-action:hover:not(:disabled):not(.is-disabled):not(#shell-help-keys) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.shell-help-link:hover .shell-help-icon,
+.shell-help-action:hover:not(:disabled):not(.is-disabled):not(#shell-help-keys) .shell-help-icon {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.shell-help-link:active,
+.shell-help-action:active:not(:disabled):not(.is-disabled):not(#shell-help-keys) {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.shell-help-action.is-disabled,
+.shell-help-action:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Keybinds: hover / active always green on icon + label */
+#shell-help-keys:hover,
+#shell-help-keys.is-active,
+#shell-help-keys.is-active:hover,
+#shell-help-keys:active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #00ff66 !important;
+}
+
+#shell-help-keys:hover .shell-help-icon,
+#shell-help-keys:hover .shell-help-label,
+#shell-help-keys.is-active .shell-help-icon,
+#shell-help-keys.is-active .shell-help-label,
+#shell-help-keys.is-active:hover .shell-help-icon,
+#shell-help-keys.is-active:hover .shell-help-label,
+#shell-help-keys:active .shell-help-icon,
+#shell-help-keys:active .shell-help-label {
+  color: #00ff66 !important;
+  opacity: 1 !important;
+}
+
+#shell-help-keys.is-active {
+  background: rgba(255, 255, 255, 0.06);
+  animation: shell-keys-confirm-pulse 1.4s ease-in-out infinite;
+}
+
+#shell-help-keys.is-active:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #66ff99 !important;
+  animation: none;
+}
+
+#shell-help-keys.is-active:hover .shell-help-icon,
+#shell-help-keys.is-active:hover .shell-help-label {
+  color: #66ff99 !important;
+}
+
+@keyframes shell-keys-confirm-pulse {
+  0%,
+  100% {
+    background: rgba(0, 255, 102, 0.08);
+    box-shadow: inset 0 0 0 0 rgba(0, 255, 102, 0);
+  }
+  50% {
+    background: rgba(0, 255, 102, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(0, 255, 102, 0.35);
+  }
+}
+
+/* ── DoodleDev confirm ─────────────────────────────────────── */
+
+#shell-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  color: rgba(255, 255, 255, 0.85);
+  padding: 20px;
 }
 
-.blueprint-header.is-corner,
-.doodle-disclaimer.is-corner {
-  height: 0;
-  flex: 0 0 0;
-  width: 0;
-  overflow: visible;
+#shell-confirm[hidden] {
+  display: none !important;
+}
+
+.shell-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.shell-confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(300px, calc(100vw - 40px));
   padding: 0;
-  gap: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(6, 14, 11, 0.94);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+  text-align: left;
 }
 
-.corner-label {
-  position: fixed;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.85);
-  user-select: none;
-  z-index: 100;
-  pointer-events: auto;
+.shell-confirm-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.corner-top-left {
-  top: 24px;
-  left: 24px;
+.shell-confirm-content {
+  padding: 12px 14px 12px;
 }
 
-.corner-top-right {
-  top: 24px;
-  right: 24px;
-  text-align: right;
+.shell-confirm-title,
+.shell-confirm-message,
+.shell-confirm-btn {
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
-.corner-bottom-left {
-  bottom: 24px;
-  left: 24px;
-}
-
-.corner-bottom-right {
-  bottom: 24px;
-  right: 24px;
-  text-align: right;
-}
-
-.blueprint-header.is-corner .sep,
-.doodle-disclaimer.is-corner .sep {
-  display: none;
-}
-
-.blueprint-header.is-corner a,
-.doodle-disclaimer.is-corner a {
+.shell-confirm-title {
+  margin: 0;
+  font-size: 14px;
   font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-align: left;
 }
 
-.blueprint-header.is-controls,
-.doodle-disclaimer.is-controls {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+.shell-confirm-message {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.68);
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.shell-confirm-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.shell-confirm-btn {
+  flex: 1 1 0;
+  margin: 0;
+  padding: 5px 8px;
+  min-height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
   font-size: 11px;
   font-weight: 500;
-  justify-content: center;
-  gap: 20px;
-  padding: 0;
-  letter-spacing: 0.15em;
-  text-align: center;
-  text-transform: uppercase;
-  position: fixed;
-  left: 24px;
-  right: 24px;
-  width: auto;
-  z-index: 100;
-  height: auto;
-  flex: 0 0 auto;
   line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.blueprint-header.is-controls {
-  top: 24px;
+.shell-confirm-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 
-.doodle-disclaimer.is-controls {
-  bottom: 24px;
+.shell-confirm-btn--primary {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #ffffff;
 }
 
-.blueprint-header.is-controls,
-.doodle-disclaimer.is-controls,
-.blueprint-header.is-controls .footer-interactive,
-.doodle-disclaimer.is-controls .footer-interactive,
-.blueprint-header.is-controls a,
-.doodle-disclaimer.is-controls a {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-}
-
-.blueprint-header .sep,
-.doodle-disclaimer .sep {
-  color: rgba(0, 255, 0, 0.25);
-}
-
-.blueprint-header a,
-.doodle-disclaimer a,
-.footer-interactive {
-  color: rgba(0, 255, 0, 0.7);
-  text-decoration: none;
-  transition: color 0.4s ease;
-}
-
-.blueprint-header a:hover,
-.doodle-disclaimer a:hover,
-.footer-interactive:hover {
-  color: rgba(0, 255, 0, 1);
+.shell-confirm-btn--primary:hover {
+  background: rgba(255, 255, 255, 0.24);
 }
 
 @media (max-width: 600px) {
   body {
-    padding: 0 10px;
-  }
-
-  .blueprint-header.is-controls,
-  .doodle-disclaimer.is-controls {
-    left: 14px;
-    right: 14px;
-  }
-
-  .blueprint-header.is-controls {
-    top: 14px;
-  }
-
-  .doodle-disclaimer.is-controls {
-    bottom: 14px;
-  }
-
-  .corner-label {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    line-height: 1.2;
-  }
-
-  .corner-top-left,
-  .corner-top-right {
-    top: 14px;
-  }
-
-  .corner-top-left,
-  .corner-bottom-left {
-    left: 14px;
-  }
-
-  .corner-top-right,
-  .corner-bottom-right {
-    right: 14px;
-  }
-
-  .corner-bottom-left,
-  .corner-bottom-right {
-    bottom: 14px;
-  }
-
-  .blueprint-header,
-  .doodle-disclaimer {
-    font-size: 14px;
+    padding: 18px;
   }
 
   #gameboy-container {
-    --base-width: min(calc(100vw - 20px), calc((100dvh - 120px) * 0.5819892473));
+    /* Mobile: only a tiny step back from max-fill */
+    --base-width: min(calc(100vw - 60px), calc((100dvh - 60px) * 0.5819892473));
   }
 
-  body.dev-chrome-hidden #gameboy-container {
-    --base-width: min(calc(100vw - 20px), calc((100dvh - 240px) * 0.5819892473));
+  #shell-chrome {
+    top: 12px;
+    left: 12px;
+    right: auto;
+    bottom: auto;
   }
 
-  .doodle-disclaimer .secondary {
-    display: none;
-  }
-}
-
-#cheat-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-#mobile-warning-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-#mobile-warning-overlay.visible {
-  opacity: 1;
-}
-
-.cheat-overlay-box,
-.mobile-warning-box {
-  width: min(88%, 420px);
-  border: 1px solid rgba(74, 222, 128, 0.45);
-  border-radius: 10px;
-  background: rgba(3, 17, 12, 0.95);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-  padding: 18px 16px;
-  color: #dcfce7;
-  text-align: center;
-}
-
-.mobile-warning-box {
-  width: min(82%, 290px);
-  max-height: 80dvh;
-  padding: 14px 12px;
-  overflow-y: auto;
-}
-
-.mobile-warning-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 6px;
-}
-
-.cheat-overlay-title,
-.mobile-warning-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
-  color: #86efac;
-}
-
-.mobile-warning-title {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.cheat-overlay-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.cheat-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  border: 1px solid rgba(134, 239, 172, 0.55);
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.cheat-dot.cheat-dot-filled {
-  background: #22c55e;
-  border-color: #22c55e;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.55);
-}
-
-.cheat-overlay-view-success {
-  display: none;
-}
-
-.cheat-overlay-box.is-success .cheat-overlay-view-default {
-  display: none;
-}
-
-.cheat-overlay-box.is-success .cheat-overlay-view-success {
-  display: block;
-}
-
-.cheat-overlay-success-text {
-  color: #4ade80;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.cheat-enter-btn.unlocked-btn {
-  background: rgba(22, 163, 74, 0.7) !important;
-  border-color: rgba(22, 163, 74, 0.95) !important;
-  color: #ecfdf5 !important;
-}
-
-.cheat-card-shake {
-  animation: cheatShake 0.45s ease;
-}
-
-@keyframes cheatShake {
-
-  0%,
-  100% {
-    transform: translateX(0);
+  #shell-help-toggle,
+  #shell-controls-toggle {
+    width: 36px;
+    height: 36px;
+    opacity: 0.92;
+    background: rgba(8, 18, 14, 0.72);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.92);
   }
 
-  20% {
-    transform: translateX(-7px);
+  #shell-help-toggle .material-symbols-outlined,
+  #shell-controls-toggle .material-symbols-outlined {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 
-  40% {
-    transform: translateX(7px);
-  }
-
-  60% {
-    transform: translateX(-5px);
-  }
-
-  80% {
-    transform: translateX(5px);
+  .shell-help-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
   }
 }
 
-.cheat-hint-active {
-  position: relative;
+/* LCD is the containment context for gb-menu cqw/cqh (matches XP layout.css).
+   Without this, .gb-screen-container padding/gap and nested cq units resolve
+   against the wrong ancestor and menu copy scales incorrectly. */
+#screen-main {
+  overflow: hidden;
+  container-type: size;
+  container-name: screen-main;
+}
+
+#screen-main.cheat-overlay-active,
+#screen-main.sound-overlay-active {
+  /* Keep LCD clipped to the bezel — overflow:visible leaked a frame around the screen. */
   overflow: hidden;
 }
 
-.cheat-hint-active>* {
-  opacity: 0;
-  transition: opacity 0.2s ease;
+#screen-main.cheat-overlay-active #menu-mode-container,
+#screen-main.sound-overlay-active #menu-mode-container {
+  visibility: hidden;
 }
 
-.cheat-hint-char {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0.86);
-  opacity: 0;
-  color: #4ade80;
-  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
-  pointer-events: none;
-}
-
-.cheat-hint-char.cheat-hint-char-fixed {
-  position: fixed;
-  top: auto;
-  transform: scale(0.86);
-}
-
-.cheat-hint-char.cheat-hint-char-in {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-
-.cheat-hint-char.cheat-hint-char-fixed.cheat-hint-char-in {
-  transform: scale(1);
-}
-
-.cheat-hint-char.cheat-hint-char-out {
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(1.07);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.cheat-hint-char.cheat-hint-char-fixed.cheat-hint-char-out {
-  transform: scale(1.07);
-}
-
-.mobile-warning-text {
-  color: rgba(220, 252, 231, 0.8);
-  font-size: 13px;
-  line-height: 1.45;
-  margin-bottom: 10px;
-}
-
-.mobile-warning-btn {
-  border: 1px solid rgba(74, 222, 128, 0.45);
-  border-radius: 6px;
-  background: rgba(22, 163, 74, 0.22);
-  color: #dcfce7;
-  padding: 7px 16px;
-  font-size: 12px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
+/* In-screen cheat / sound overlays live in gb-menu.css (cqw/cqh).
+   Do not redefine #cheat-overlay / #sound-overlay sizing here. */

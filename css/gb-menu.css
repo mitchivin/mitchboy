@@ -1,0 +1,631 @@
+/* Game Boy Retro List Menu Styles - Authentic GBC Dark Mode */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ==========================================================================
+   1. UNIFIED GBC SCREEN CONTAINER SYSTEM
+   ========================================================================== */
+
+/* Outer screen box that covers the full emulator canvas */
+.gb-screen-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 5.5cqw;
+  gap: 4cqh;
+  /* Minimum separation between avatar header and menu body */
+  container-type: size;
+  container-name: menu-screen;
+  background-color: #1a1f35;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size:
+    cover,
+    100% 4px,
+    6px 100%;
+  background-position: center;
+  image-rendering: pixelated;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
+  font-family: 'Press Start 2P', monospace;
+  color: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+}
+
+/* Header section: holds the avatar at a fixed, consistent height */
+.gb-screen-header {
+  display: none;
+  /* Hide header since avatar is now background */
+}
+
+/* Body section: holds menu options or cheat inputs in the remaining space */
+.gb-screen-body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  /* Center elements vertically in the available space below the fixed header */
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Scroll clip + list positioning live here, not on the body */
+.gb-menu-viewport {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Menu LCD credit marquee (all views except MY GAMES) — top L→R, then bottom R→L, then pause */
+.gb-screen-container.has-extras-credit {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.gb-screen-container.has-extras-credit .gb-screen-body {
+  justify-content: flex-start;
+  padding-top: 5.5cqw;
+  padding-bottom: 5.5cqw;
+}
+
+.gb-extras-credit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+  font-size: 4.2cqw;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffd000;
+}
+
+.gb-extras-credit-lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 2.2cqh 0 1.6cqh;
+  overflow: hidden;
+  container-type: inline-size;
+  /* Soft feather so text fades in/out at the edges */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 10%,
+    #000 90%,
+    transparent 100%
+  );
+}
+
+.gb-extras-credit-lane--top {
+  top: 0;
+}
+
+.gb-extras-credit-lane--bottom {
+  bottom: 0;
+}
+
+.gb-extras-credit-text {
+  display: inline-block;
+  white-space: nowrap;
+  text-shadow:
+    0 0 1.2cqw rgba(0, 0, 0, 0.85),
+    0 0 2.4cqw rgba(0, 0, 0, 0.55),
+    0.35cqw 0.35cqw 0 #000,
+    -0.35cqw 0.35cqw 0 #000,
+    0.35cqw -0.35cqw 0 #000,
+    -0.35cqw -0.35cqw 0 #000;
+  animation-duration: 12s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.gb-extras-credit-lane--top .gb-extras-credit-text {
+  animation-name: gbExtrasCreditTop;
+}
+
+.gb-extras-credit-lane--bottom .gb-extras-credit-text {
+  animation-name: gbExtrasCreditBottom;
+}
+
+/* Top: in left → out right, then wait off-screen for bottom pass + pause */
+@keyframes gbExtrasCreditTop {
+  0% {
+    transform: translateX(-100%);
+  }
+  36% {
+    transform: translateX(calc(100cqi + 100%));
+  }
+  36.01%,
+  100% {
+    transform: translateX(calc(100cqi + 100%));
+  }
+}
+
+/* Bottom: wait, then in right → out left, then short pause before loop */
+@keyframes gbExtrasCreditBottom {
+  0%,
+  36% {
+    transform: translateX(calc(100cqi + 100%));
+  }
+  72% {
+    transform: translateX(-100%);
+  }
+  72.01%,
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gb-extras-credit-lane--top {
+    text-align: center;
+  }
+
+  .gb-extras-credit-lane--bottom {
+    display: none;
+  }
+
+  .gb-extras-credit-text {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   2. AVATAR
+   ========================================================================== */
+
+.gb-avatar-image {
+  height: 100%;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border: max(2px, 3cqh) solid #ffd000;
+  border-radius: 4px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.95),
+    0 0 8px rgba(255, 208, 0, 0.4);
+}
+
+/* ==========================================================================
+   3. RETRO LIST MENU COMPONENTS
+   ========================================================================== */
+
+#rom-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.8cqh;
+  padding: 0;
+  width: 100%;
+  transition: transform 0.15s steps(4, end);
+  box-sizing: border-box;
+}
+
+.gb-menu-item {
+  display: grid;
+  grid-template-columns: minmax(8.8cqw, 1fr) auto minmax(8.8cqw, 1fr);
+  /* 3-column grid centers middle text perfectly */
+  align-items: center;
+  font-size: 6.5cqw;
+  line-height: 1.2;
+  cursor: pointer;
+  padding: 1.2cqw 0;
+  /* Tighter padding for closer list options */
+  width: 100%;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  /* 8-bit solid text outline for absolute legibility on scenic background */
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000;
+  transition: none;
+  box-sizing: border-box;
+}
+
+.gb-menu-cursor {
+  grid-column: 1;
+  justify-self: end;
+  width: 6.2cqw;
+  height: 6.2cqw;
+  margin-right: 2.6cqw;
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.gb-menu-cursor--right {
+  grid-column: 3;
+  justify-self: start;
+  margin-right: 0;
+  margin-left: 2.6cqw;
+}
+
+.gb-menu-cursor::before {
+  content: '';
+  display: block;
+  width: 4cqw;
+  height: 4cqw;
+  background-color: #ffd000;
+  clip-path: polygon(0% 0%, 0% 100%, 100% 50%);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 3px rgba(255, 208, 0, 0.9));
+}
+
+.gb-menu-cursor--right::before {
+  clip-path: polygon(100% 0%, 100% 100%, 0% 50%);
+}
+
+.gb-menu-item.is-disabled {
+  opacity: 0.42;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gb-menu-item[data-selected='true'] {
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.75);
+  box-shadow: none;
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000;
+}
+
+.gb-menu-item[data-selected='true'] .gb-menu-cursor {
+  visibility: visible;
+  animation: blink 0.8s step-end infinite;
+}
+
+.gb-menu-text {
+  grid-column: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   4. CHEAT ENTRY OVERLAY COMPONENTS
+   ========================================================================== */
+
+#cheat-overlay {
+  z-index: 10050;
+  /* Sits above standard menu */
+}
+
+.cheat-overlay-view-default,
+.cheat-overlay-view-success {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Center vertically in the space available below the avatar */
+  box-sizing: border-box;
+}
+
+.cheat-overlay-title {
+  font-size: 7.2cqw;
+  /* Larger text for better readability on GBC screen */
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  margin-bottom: 4cqw;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000;
+  text-transform: uppercase;
+}
+
+.cheat-overlay-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2.4cqw;
+  /* Balanced gap for retro entry boxes */
+  margin-top: 4cqw;
+  /* Spacing between title and dots */
+}
+
+.cheat-dot {
+  width: 7.8cqw;
+  /* Balanced retro entry square box size */
+  height: 7.8cqw;
+  border: 0.8cqw solid rgba(255, 255, 255, 0.95);
+  background: transparent;
+  box-sizing: border-box;
+  box-shadow:
+    0.6cqw 0.6cqw 0 #000,
+    -0.6cqw 0.6cqw 0 #000,
+    0.6cqw -0.6cqw 0 #000,
+    -0.6cqw -0.6cqw 0 #000;
+}
+
+.cheat-dot.cheat-dot-hint {
+  border-color: #ffd000;
+  box-shadow:
+    0.6cqw 0.6cqw 0 #000,
+    -0.6cqw 0.6cqw 0 #000,
+    0.6cqw -0.6cqw 0 #000,
+    -0.6cqw -0.6cqw 0 #000,
+    0 0 20px rgba(255, 208, 0, 1);
+  animation: cheat-dot-hint-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes cheat-dot-hint-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0.6cqw 0.6cqw 0 #000,
+      -0.6cqw 0.6cqw 0 #000,
+      0.6cqw -0.6cqw 0 #000,
+      -0.6cqw -0.6cqw 0 #000,
+      0 0 20px rgba(255, 208, 0, 1);
+  }
+
+  50% {
+    box-shadow:
+      0.6cqw 0.6cqw 0 #000,
+      -0.6cqw 0.6cqw 0 #000,
+      0.6cqw -0.6cqw 0 #000,
+      -0.6cqw -0.6cqw 0 #000,
+      0 0 30px rgba(255, 208, 0, 1);
+  }
+}
+
+.cheat-dot.cheat-dot-filled {
+  background: #ffd000;
+  border-color: #ffd000;
+  box-shadow:
+    0.6cqw 0.6cqw 0 #000,
+    -0.6cqw 0.6cqw 0 #000,
+    0.6cqw -0.6cqw 0 #000,
+    -0.6cqw -0.6cqw 0 #000,
+    0 0 10px rgba(255, 208, 0, 0.8);
+  animation: cheat-dot-pulse 0.8s ease-in-out;
+}
+
+@keyframes cheat-dot-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0.6cqw 0.6cqw 0 #000,
+      -0.6cqw 0.6cqw 0 #000,
+      0.6cqw -0.6cqw 0 #000,
+      -0.6cqw -0.6cqw 0 #000,
+      0 0 10px rgba(255, 208, 0, 0.8);
+  }
+
+  50% {
+    box-shadow:
+      0.6cqw 0.6cqw 0 #000,
+      -0.6cqw 0.6cqw 0 #000,
+      0.6cqw -0.6cqw 0 #000,
+      -0.6cqw -0.6cqw 0 #000,
+      0 0 20px rgba(255, 208, 0, 1);
+  }
+}
+
+.cheat-overlay-view-success {
+  display: none;
+}
+
+.cheat-overlay-box.is-success .cheat-overlay-view-default {
+  display: none;
+}
+
+.cheat-overlay-box.is-success .cheat-overlay-view-success {
+  display: flex;
+}
+
+.cheat-overlay-success-text {
+  color: #ffd000;
+  /* Vivid Amber */
+  font-size: 7.2cqw;
+  /* Matches the title text size for clear readability */
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000,
+    0 0 12px rgba(255, 208, 0, 0.8);
+  animation: blink 0.8s step-end infinite;
+}
+
+.cheat-card-shake {
+  animation: cheatShake 0.45s ease;
+}
+
+/* ==========================================================================
+   4b. SOUND EFFECTS PROMPT OVERLAY
+   ========================================================================== */
+
+#sound-overlay {
+  z-index: 10060;
+}
+
+.sound-overlay-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 5cqh;
+}
+
+.sound-overlay-title {
+  font-size: 5.6cqw;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000;
+  text-transform: uppercase;
+  text-align: center;
+  max-width: 92%;
+}
+
+.sound-overlay-options {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2.4cqh;
+  width: 100%;
+  margin-top: 2cqh;
+}
+
+.sound-overlay-option {
+  display: grid;
+  grid-template-columns: minmax(8.8cqw, 1fr) auto minmax(8.8cqw, 1fr);
+  align-items: center;
+  font-size: 6.5cqw;
+  line-height: 1.2;
+  cursor: pointer;
+  padding: 1.2cqw 0;
+  width: 100%;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow:
+    0.5cqw 0.5cqw 0 #000,
+    -0.5cqw 0.5cqw 0 #000,
+    0.5cqw -0.5cqw 0 #000,
+    -0.5cqw -0.5cqw 0 #000;
+  box-sizing: border-box;
+}
+
+.sound-overlay-option[data-selected='true'] {
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.sound-overlay-option[data-selected='true'] .gb-menu-cursor {
+  visibility: visible;
+  animation: blink 0.8s step-end infinite;
+}
+
+.sound-overlay-option .gb-menu-text {
+  grid-column: 2;
+}
+
+/* ==========================================================================
+   5. SHARED ANIMATIONS
+   ========================================================================== */
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes cheatShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-1.5cqw);
+  }
+
+  40%,
+  80% {
+    transform: translateX(1.5cqw);
+  }
+}
+
+/* ==========================================================================
+   6. MARQUEE TEXT ANIMATION FOR LONG TITLES (games library only)
+   ========================================================================== */
+.gb-games-menu .gb-menu-viewport {
+  margin-top: 3.4cqh;
+}
+
+.gb-games-menu .gb-menu-text {
+  max-width: 70cqw;
+}
+
+.gb-games-menu .gb-menu-text-inner {
+  display: inline;
+  white-space: nowrap;
+}
+
+.gb-games-menu .gb-menu-text-inner.animate-marquee {
+  display: inline-block !important;
+  width: max-content !important;
+  text-overflow: clip !important;
+  animation: menuMarquee var(--marquee-duration, 10s) linear infinite;
+}
+
+.gb-games-menu .gb-menu-item[data-selected='true'] .gb-menu-text {
+  text-overflow: clip;
+}
+
+@keyframes menuMarquee {
+  0%,
+  3% {
+    transform: translateX(0);
+  }
+
+  /* Pause at start */
+  40%,
+  44% {
+    transform: translateX(calc(-1 * var(--marquee-overflow, 0px)));
+  }
+
+  /* Pause at end */
+  90%,
+  100% {
+    transform: translateX(0);
+  }
+}

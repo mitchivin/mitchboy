@@ -3,37 +3,124 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Boy Emulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#02110c">
+  <!-- Instant first paint: solid #02110c (not color-scheme grey) + spinner + menu btn -->
+  <style>
+    html {
+      background-color: #02110c !important;
+      background: #02110c !important;
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #02110c !important;
+      background:
+        radial-gradient(ellipse 62% 70% at -8% 52%, rgba(34, 197, 94, 0.09), transparent 78%),
+        radial-gradient(ellipse 64% 72% at 108% 48%, rgba(16, 185, 129, 0.08), transparent 80%),
+        radial-gradient(circle at 18% 22%, rgba(110, 231, 183, 0.03), transparent 48%),
+        radial-gradient(circle at 82% 26%, rgba(74, 222, 128, 0.025), transparent 50%),
+        linear-gradient(180deg, #02110c 0%, #010806 48%, #000302 100%) !important;
+    }
+    /* Hide device only — keep menu button visible during boot */
+    body.app-loading #gameboy-container {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    #app-shell-loader {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 20000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: none !important;
+      background: transparent !important;
+    }
+    body:not(.app-loading) #app-shell-loader { display: none !important; }
+    .shell-boot-spinner {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(134, 239, 172, 0.16);
+      border-top-color: rgba(134, 239, 172, 0.95);
+      box-shadow: 0 0 22px rgba(74, 222, 128, 0.22);
+      animation: shellBootSpin 0.85s linear infinite;
+    }
+    @keyframes shellBootSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* Shell chrome visible during boot (before layout.css) */
+    #shell-chrome {
+      position: fixed !important;
+      top: 16px !important;
+      left: 16px !important;
+      z-index: 30001 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start !important;
+      gap: 8px !important;
+    }
+    #shell-help,
+    #shell-controls {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    #shell-help-toggle,
+    #shell-controls-toggle {
+      box-sizing: border-box;
+      width: 34px;
+      height: 34px;
+      margin: 0;
+      padding: 0;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(8, 18, 14, 0.42);
+      color: rgba(255, 255, 255, 0.78);
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.48;
+    }
+    #shell-help-panel[hidden],
+    #shell-controls-panel[hidden] { display: none !important; }
+  </style>
+  <title>Mitch Boy Color</title>
   <meta name="description"
-    content="Interactive Game Boy emulator for the web with custom keybinds, save/load states, speed and volume controls, and a retro handheld UI.">
+    content="Interactive Mitch Boy Color emulator for the web with custom keybinds, speed and volume controls, and a retro handheld UI.">
   <meta name="author" content="Mitch Ivin">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <link rel="canonical" href="https://mitchivin.github.io/gameboy/">
+  <link rel="canonical" href="https://mitchivin.github.io/mitchboy/">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Interactive Game Boy Emulator">
-  <meta property="og:title" content="Interactive Game Boy">
+  <meta property="og:site_name" content="Mitch Boy Color">
+  <meta property="og:title" content="Mitch Boy Color">
   <meta property="og:description"
-    content="Play Game Boy and Game Boy Color ROMs in a browser with custom controls and classic handheld styling.">
-  <meta property="og:url" content="https://mitchivin.github.io/gameboy/">
-  <meta property="og:image" content="https://mitchivin.github.io/gameboy/public/meta/interactive-gameboy-og.jpg">
+    content="Play classic .gb / .gbc ROMs in a browser with custom controls and retro handheld styling.">
+  <meta property="og:url" content="https://mitchivin.github.io/mitchboy/">
+  <meta property="og:image" content="https://mitchivin.github.io/mitchboy/public/meta/interactive-gameboy-og.jpg">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Interactive Game Boy">
+  <meta name="twitter:title" content="Mitch Boy Color">
   <meta name="twitter:description"
-    content="Web-based Game Boy emulator with save states, keybind customization, and responsive retro UI.">
-  <meta name="twitter:image" content="https://mitchivin.github.io/gameboy/public/meta/interactive-gameboy-og.jpg">
+    content="Web-based Mitch Boy Color emulator with keybind customization and responsive retro UI.">
+  <meta name="twitter:image" content="https://mitchivin.github.io/mitchboy/public/meta/interactive-gameboy-og.jpg">
 
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "Interactive Game Boy Emulator",
+      "name": "Mitch Boy Color",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Web",
-      "url": "https://mitchivin.github.io/gameboy/",
-      "description": "Interactive Game Boy emulator for the web with keybind customization, save states, and retro handheld UI.",
+      "url": "https://mitchivin.github.io/mitchboy/",
+      "description": "Interactive Mitch Boy Color emulator for the web with keybind customization and retro handheld UI.",
       "author": {
         "@type": "Person",
         "name": "Mitch Ivin",
@@ -42,30 +129,105 @@
     }
   </script>
   <link rel="icon" type="image/png" href="public/meta/fav.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=keys-hover-3">
   <link rel="stylesheet" href="css/gameboy.css">
+  <style id="shell-help-keys-force">
+    /* Keybinds hover/active — forced here so nothing in cascaded CSS can bury it */
+    #shell-help-keys:hover,
+    #shell-help-keys.is-active,
+    #shell-help-keys.is-active:hover {
+      color: #00ff66 !important;
+      -webkit-text-fill-color: #00ff66 !important;
+    }
+    #shell-help-keys:hover .shell-help-icon,
+    #shell-help-keys:hover .shell-help-label,
+    #shell-help-keys.is-active .shell-help-icon,
+    #shell-help-keys.is-active .shell-help-label,
+    #shell-help-keys.is-active:hover .shell-help-icon,
+    #shell-help-keys.is-active:hover .shell-help-label {
+      color: #00ff66 !important;
+      -webkit-text-fill-color: #00ff66 !important;
+      opacity: 1 !important;
+      filter: none !important;
+    }
+    #shell-help-keys.is-active:hover,
+    #shell-help-keys.is-active:hover .shell-help-icon,
+    #shell-help-keys.is-active:hover .shell-help-label {
+      color: #66ff99 !important;
+      -webkit-text-fill-color: #66ff99 !important;
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link
     href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
-  <style>
-    ::-webkit-scrollbar { display: none; }
-  </style>
-  <script src="js/core/resampler.js"></script>
-  <script src="js/core/XAudioServer.js"></script>
-  <script src="js/core/resize.js"></script>
-  <script src="js/core/GameBoyCore.js"></script>
-  <script src="js/core/GameBoyIO.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Barlow+Condensed:wght@700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
 </head>
 
-<body class="app-loading awaiting-mobile-confirm">
+<body class="app-loading" style="background-color:#02110c;margin:0;">
+  <!-- Spinner + menu first; device hidden until boot finishes -->
+  <div id="app-shell-loader" aria-live="polite" aria-label="Loading" style="position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+    <div class="shell-boot-spinner" aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(134,239,172,0.16);border-top-color:rgba(134,239,172,0.95);box-shadow:0 0 22px rgba(74,222,128,0.22);animation:shellBootSpin 0.85s linear infinite;"></div>
+  </div>
 
-  <header class="blueprint-header is-corner">
-    <span class="corner-label corner-top-left">Game Boy Color</span>
-    <span class="corner-label corner-top-right">Preset 1</span>
-  </header>
+  <div id="shell-chrome" style="position:fixed;top:16px;left:16px;z-index:30001;">
+    <div id="shell-help">
+      <button type="button" id="shell-help-toggle" aria-label="Menu" aria-expanded="false" aria-controls="shell-help-panel">
+        <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+      </button>
+      <div id="shell-help-panel" role="menu" hidden>
+        <a class="shell-help-link" id="shell-help-doodledev" href="https://doodledev.app" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">open_in_new</span>
+          <span class="shell-help-label">Try DoodleDev</span>
+        </a>
+        <div class="shell-help-subheader">Developed by Mitch Ivin</div>
+        <a class="shell-help-link" id="shell-help-github" href="https://github.com/mitchivin" target="_blank" rel="noopener noreferrer">
+          <svg class="shell-help-icon shell-help-icon--github" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span class="shell-help-label">Github</span>
+        </a>
+        <a class="shell-help-link" id="shell-help-instagram" href="https://www.instagram.com/mitchivin/" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">photo_camera</span>
+          <span class="shell-help-label">Instagram</span>
+        </a>
+        <a class="shell-help-link" id="shell-help-linkedin" href="https://www.linkedin.com/in/mitchivin/" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">work</span>
+          <span class="shell-help-label">LinkedIn</span>
+        </a>
+        <a class="shell-help-link" id="shell-help-author" href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">person</span>
+          <span class="shell-help-label">Portfolio</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="shell-controls" data-shell-desktop-only>
+      <button type="button" id="shell-controls-toggle" aria-label="Controls" aria-expanded="false" aria-controls="shell-controls-panel">
+        <span class="material-symbols-outlined" aria-hidden="true">gamepad</span>
+      </button>
+      <div id="shell-controls-panel" role="menu" hidden>
+        <button type="button" class="shell-help-action" id="shell-help-keys" role="menuitem">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">keyboard</span>
+          <span class="shell-help-label">Keybinds</span>
+        </button>
+        <button type="button" class="shell-help-action is-disabled" disabled aria-disabled="true">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">save</span>
+          <span class="shell-help-label">Save (Coming Soon)</span>
+        </button>
+        <button type="button" class="shell-help-action is-disabled" disabled aria-disabled="true">
+          <span class="material-symbols-outlined shell-help-icon" aria-hidden="true">folder_open</span>
+          <span class="shell-help-label">Load (Coming Soon)</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Device Shell ───────────────────────────────────────── -->
   <div id="gameboy-container">
@@ -169,7 +331,7 @@
     <div id="gameboy-component">
       <!-- BASE: SVG body from local file -->
       <div class="item" id="base" style="height: 100%; left: 0%; top: 0%; width: 100%; z-index: 2">
-        <img src="public/base.webp" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: fill; pointer-events: none;">
+        <img src="public/base.webp" alt="" style="width: 100%; height: 100%; display: block; object-fit: fill;">
       </div>
 
       <!-- D-PAD -->
@@ -183,25 +345,33 @@
           </svg>
         </div>
         <div class="item" id="right" style="transform: rotate(90deg); height: 20.2733%; left: 74.3787%; opacity: 1; top: 40.7031%; width: 21.1185%; z-index: 4">
-          <div class="key-internal-label" data-button="right" style="transform: translate(-50%, -50%) rotate(-90deg);">→</div>
+          <div class="key-internal-label is-square" data-button="right" style="transform: translate(-50%, -50%) rotate(-90deg);">
+            <span class="material-symbols-outlined key-label-icon" aria-hidden="true">keyboard_arrow_right</span>
+          </div>
           <svg class="shape" viewBox="0 0 22.05 21" preserveAspectRatio="xMidYMid meet" width="22.05" height="21">
             <g><path class="fill-path" d="M 2 18.992 L 20.054 18.992 L 11.027 2 L 2 18.992 Z" fill="url(#shared-fill-3)" vector-effect="non-scaling-stroke"></path></g>
           </svg>
         </div>
         <div class="item" id="down" style="transform: rotate(180deg); height: 18.3418%; left: 40.2185%; opacity: 1; top: 76.2956%; width: 20.1609%; z-index: 5">
-          <div class="key-internal-label" data-button="down" style="transform: translate(-50%, -50%) rotate(-180deg);">↓</div>
+          <div class="key-internal-label is-square" data-button="down" style="transform: translate(-50%, -50%) rotate(-180deg);">
+            <span class="material-symbols-outlined key-label-icon" aria-hidden="true">keyboard_arrow_down</span>
+          </div>
           <svg class="shape" viewBox="0 0 21.05 19" preserveAspectRatio="xMidYMid meet" width="21.05" height="19">
             <g><path class="fill-path" d="M 1.909 17.182 L 19.145 17.182 L 10.527 1.809 L 1.909 17.182 Z" fill="url(#shared-fill-3)" vector-effect="non-scaling-stroke"></path></g>
           </svg>
         </div>
         <div class="item" id="up" style="height: 20.2733%; left: 39.2609%; opacity: 1; top: 6.76037%; width: 21.1185%; z-index: 6">
-          <div class="key-internal-label" data-button="up">↑</div>
+          <div class="key-internal-label is-square" data-button="up">
+            <span class="material-symbols-outlined key-label-icon" aria-hidden="true">keyboard_arrow_up</span>
+          </div>
           <svg class="shape" viewBox="0 0 22.05 21" preserveAspectRatio="xMidYMid meet" width="22.05" height="21">
             <g><path class="fill-path" d="M 2 18.992 L 20.054 18.992 L 11.027 2 L 2 18.992 Z" fill="url(#shared-fill-3)" vector-effect="non-scaling-stroke"></path></g>
           </svg>
         </div>
         <div class="item" id="left" style="transform: rotate(270deg); height: 20.2733%; left: 5.43277%; opacity: 1; top: 40.7031%; width: 21.1185%; z-index: 7">
-          <div class="key-internal-label" data-button="left" style="transform: translate(-50%, -50%) rotate(-270deg);">←</div>
+          <div class="key-internal-label is-square" data-button="left" style="transform: translate(-50%, -50%) rotate(-270deg);">
+            <span class="material-symbols-outlined key-label-icon" aria-hidden="true">keyboard_arrow_left</span>
+          </div>
           <svg class="shape" viewBox="0 0 22.05 21" preserveAspectRatio="xMidYMid meet" width="22.05" height="21">
             <g><path class="fill-path" d="M 2 18.992 L 20.054 18.992 L 11.027 2 L 2 18.992 Z" fill="url(#shared-fill-3)" vector-effect="non-scaling-stroke"></path></g>
           </svg>
@@ -220,11 +390,12 @@
             </g>
           </svg>
         </div>
+        <div id="dpad-hitarea" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:20;pointer-events:auto;cursor:pointer;clip-path:polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%);"></div>
       </section>
 
       <!-- B BUTTON -->
       <div class="item" id="b" style="height: 6.85484%; isolation: isolate; left: 60.0462%; top: 63.9785%; width: 12.8515%; z-index: 6">
-        <div class="key-internal-label" data-button="b">Q</div>
+        <div class="key-internal-label is-square" data-button="b">Q</div>
         <div class="item" id="b-butt" style="height: 100%; left: 0%; top: 0%; width: 100%; z-index: 3">
           <img class="shape" src="public/button-b.webp" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: fill;">
         </div>
@@ -238,10 +409,11 @@
           </svg>
         </div>
       </div>
+      <div id="b-hitarea" style="position:absolute;left:59.5%;top:63%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
 
       <!-- A BUTTON -->
       <div class="item" id="a" style="height: 6.72043%; isolation: isolate; left: 77.8291%; top: 60.3495%; width: 12.8589%; z-index: 7">
-        <div class="key-internal-label" data-button="a">W</div>
+        <div class="key-internal-label is-square" data-button="a">W</div>
         <div class="item" id="a-butt" style="height: 100%; left: 0%; top: 0%; width: 100%; z-index: 3">
           <img class="shape" src="public/button-a.webp" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: fill;">
         </div>
@@ -255,9 +427,10 @@
           </svg>
         </div>
       </div>
+      <div id="a-hitarea" style="position:absolute;left:77.5%;top:59.5%;width:15%;height:8.5%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
 
       <!-- SCREEN -->
-      <section class="item" id="screen" style="height: 46.5581%; isolation: isolate; left: 6.00462%; top: 3.76344%; width: 88.0083%; z-index: 3">
+      <section class="item" id="screen" style="height: 46.5581%; isolation: isolate; left: 5.65%; top: 3.76344%; width: 88.0083%; z-index: 3">
         <div class="item" id="scr-base" style="height: 100%; left: 0.468011%; opacity: 1; top: 0%; width: 99.532%; z-index: 2">
           <svg class="shape" viewBox="0 0 379.29 346.39" preserveAspectRatio="xMidYMid meet" width="379.29" height="346.39">
             <defs><path d="M 17.422 2.999 C 149.314 2.999 229.29 3.114 361.183 3.114 C 368.72 3.114 375.014 3.616 376.144 13.944 C 376.521 134.433 376.059 211.574 376.059 320.045 C 375.592 328.034 365.158 331.594 357.303 333.114 C 324.94 339.379 296.429 339.832 263.525 341.827 C 237.077 343.432 214.333 343.393 187.837 343.393 C 162.627 343.393 140.987 343.387 115.825 341.827 C 82.925 339.788 54.41 339.379 22.047 333.114 C 14.193 331.594 3.756 328.034 3.292 320.045 C 3.292 211.676 2.758 135.099 3.135 14.61 C 4.265 4.283 9.885 2.999 17.422 2.999 Z" id="path-19"></path></defs>
@@ -287,7 +460,7 @@
           </svg>
         </p>
         <div class="item" id="logo-gbc" style="height: 9.57416%; left: 20.6937%; opacity: 1; top: 82.791%; width: 58.6158%; z-index: 4">
-          <img src="public/icon.svg" alt="" draggable="false" style="width: 100%; height: 100%; display: block; object-fit: contain; pointer-events: none;">
+          <img src="public/icon.svg" alt="" style="width: 100%; height: 100%; display: block; object-fit: contain;">
         </div>
         <div class="item" id="pwr-accent" style="height: 5.7738%; left: 7.65398%; top: 30.9677%; width: 6.69863%; z-index: 6">
           <svg class="shape" viewBox="0 0 25.53 20" preserveAspectRatio="xMidYMid meet" width="25.53" height="20">
@@ -347,33 +520,42 @@
         </div>
       </section>
 
-      <div class="key-internal-label" style="top: 91%; left: 50%; width: auto; height: 28px; padding: 0 8px; pointer-events: none; transform: translate(-50%, -50%); white-space: nowrap; font-size: 11px;">TAB · MENU / GAME</div>
+      <div class="key-internal-label" data-button="toggle">TAB</div>
+      <div class="key-internal-label" data-button="reset">RESET</div>
+      <div class="key-internal-label" data-button="confirm">CONFIRM</div>
+
+      <!-- START/SELECT HIT AREAS -->
+      <div id="select-hitarea" style="position:absolute;left:37.9%;top:80.1%;width:11.1%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
+      <div id="start-hitarea"  style="position:absolute;left:51.1%;top:80.1%;width:11%;height:4.2%;z-index:8;pointer-events:auto;cursor:pointer;"></div>
     </div><!-- end #gameboy-component -->
   </div><!-- end #gameboy-container -->
 
-  <div id="app-shell-loader" aria-live="polite" aria-label="Loading Game Boy shell">
-    <div class="gameboy-loader-box">
-      <div class="gameboy-loader-spinner" aria-hidden="true"></div>
-      <div class="gameboy-loader-text">BOOTING SHELL...</div>
+  <div id="shell-confirm" hidden>
+    <div class="shell-confirm-backdrop" data-shell-confirm-dismiss></div>
+    <div class="shell-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="shell-confirm-title" aria-describedby="shell-confirm-message">
+      <div class="shell-confirm-header">
+        <div id="shell-confirm-title" class="shell-confirm-title">Open Link</div>
+      </div>
+      <div class="shell-confirm-content">
+        <p id="shell-confirm-message" class="shell-confirm-message">Opens DoodleDev in a new tab. This device is available in the Preset menu.</p>
+        <div class="shell-confirm-actions">
+          <button type="button" class="shell-confirm-btn" data-shell-confirm-dismiss>Cancel</button>
+          <button type="button" class="shell-confirm-btn shell-confirm-btn--primary" id="shell-confirm-open">Open</button>
+        </div>
+      </div>
     </div>
   </div>
-
-  <footer class="doodle-disclaimer is-corner">
-    <span class="corner-label corner-bottom-left">built in <a href="https://doodledev.app" target="_blank" rel="noopener noreferrer">doodledev</a></span>
-    <span class="corner-label corner-bottom-right">by <a href="https://mitchivin.com/" target="_blank" rel="noopener noreferrer">Mitch Ivin</a></span>
-  </footer>
 
   <!-- Assets to mount into screen -->
   <div id="shadow-assets" class="hidden">
     <div id="rom-mode-container" class="w-full h-full flex items-center justify-center relative overflow-hidden hidden pointer-events-auto">
       <canvas id="gameboy-screen" class="w-full h-full" style="display: block; object-fit: fill;"></canvas>
     </div>
-    <div id="menu-mode-container" class="w-full h-full flex relative overflow-hidden pointer-events-auto">
-      <div class="w-full h-full flex flex-col overflow-hidden relative">
-        <div class="w-full h-full flex flex-col items-center justify-center">
-          <div class="relative w-full h-full flex flex-col items-center justify-start overflow-hidden">
-            <div id="rom-carousel" class="flex flex-col transition-transform duration-500"></div>
-          </div>
+    <div id="menu-mode-container" class="gb-screen-container pointer-events-auto">
+      <div class="gb-screen-header"></div>
+      <div class="gb-screen-body">
+        <div class="gb-menu-viewport">
+          <div id="rom-carousel"></div>
         </div>
       </div>
       <input type="file" id="rom-file-input" accept=".gb,.gbc" class="hidden">
@@ -381,6 +563,20 @@
     </div>
   </div>
 
-  <script type="module" src="js/main.js"></script>
+  <script>
+    window.__MITCHIVIN_ZOOM_GUARD_MODE__ = 'strict';
+  </script>
+  <script src="js/mobileZoomGuard.js" defer></script>
+  <script defer>
+    ['selectstart', 'dragstart', 'contextmenu'].forEach((evt) => {
+      document.addEventListener(evt, (e) => e.preventDefault(), { passive: false });
+    });
+  </script>
+  <script src="js/core/resampler.js" defer></script>
+  <script src="js/core/XAudioServer.js" defer></script>
+  <script src="js/core/resize.js" defer></script>
+  <script src="js/core/GameBoyCore.js" defer></script>
+  <script src="js/core/GameBoyIO.js" defer></script>
+  <script type="module" src="js/main.js?v=keys-hover-3"></script>
 </body>
 </html>
