@@ -26,7 +26,8 @@ class EmulatorManager {
     return iOSUA || iPadOS;
   }
 
-  _primeIOSAudioSession() {
+  /** Public so shell audio unlock can reuse the same iOS HTMLMediaElement primer. */
+  primeIOSAudioSession() {
     if (!this._isIOSDevice()) return;
 
     try {
@@ -66,7 +67,7 @@ class EmulatorManager {
   }
 
   unlockAudio() {
-    this._primeIOSAudioSession();
+    this.primeIOSAudioSession();
 
     const resumeIfNeeded = (context) => {
       if (!context || typeof context.resume !== 'function') return;

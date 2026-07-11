@@ -4,6 +4,7 @@
  */
 
 import { State } from './state.js';
+import { Emulator } from './emulator.js';
 
 // ─── AudioContext (lazy) ────────────────────────────────────────────────────
 // Created only when the user opts into sound effects. That Yes click is the unlock gesture.
@@ -69,6 +70,7 @@ function resumeIfSuspended() {
 /**
  * Call from the sound-prompt confirm gesture to unlock Web Audio.
  * Must be invoked from pointerup/touchend/click/keydown — not pointerdown/touchstart.
+ * On iOS, HTMLMediaElement.play() in-gesture is required (Web Audio resume alone fails).
  */
 export function enableShellAudio() {
   if (!ensureAudioGraph()) {
@@ -77,6 +79,9 @@ export function enableShellAudio() {
   }
 
   shellAudioEnabled = true;
+
+  // Same primer ROM load uses — opens the iOS audio session in this gesture.
+  Emulator.primeIOSAudioSession();
 
   // Silent warm-up in the same gesture (helps some mobile WebViews).
   try {
@@ -87,6 +92,15 @@ export function enableShellAudio() {
     source.start(0);
   } catch (_) {
     /* ignore */
+  }
+
+  // Kick resume immediately; callers should not wait before starting music/SFX.
+  if (ctx.state === 'suspended') {
+    try {
+      ctx.resume().catch(() => {});
+    } catch (_) {
+      /* ignore */
+    }
   }
 
   // Soft resume on later focus returns (after user opted in). Once only.

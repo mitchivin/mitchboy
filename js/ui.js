@@ -737,13 +737,16 @@ class UIManager {
       overlay.style.backgroundPosition = 'center';
 
       overlay.querySelectorAll('.sound-overlay-option').forEach((option, index) => {
-        option.addEventListener('click', (e) => {
+        const confirmFromGesture = (e) => {
           e.preventDefault();
           e.stopPropagation();
           this._soundSelectionIndex = index;
           this.updateSoundSelection();
           this.confirmSoundChoice();
-        });
+        };
+        // pointerup matches A-button path; click kept for mouse / accessibility.
+        option.addEventListener('pointerup', confirmFromGesture);
+        option.addEventListener('click', confirmFromGesture);
       });
 
       mount.appendChild(overlay);
@@ -804,14 +807,12 @@ class UIManager {
 
     this._soundPromptResolved = true;
 
-    // Always unlock in this gesture so Settings volume changes can play later.
-    // Must run on pointerup/touchend/click — not pointerdown/touchstart.
-    enableShellAudio().then(() => {
-      Emulator.setVolume(enable ? 100 : 0);
-      if (enable && State.get('currentMode') === 'menu') {
-        startMenuMusic();
-      }
-    });
+    // Unlock + start music in this gesture (iOS needs HTML primer + sync Web Audio work).
+    enableShellAudio();
+    Emulator.setVolume(enable ? 100 : 0);
+    if (enable && State.get('currentMode') === 'menu') {
+      startMenuMusic();
+    }
 
     this.closeSoundOverlay();
 
