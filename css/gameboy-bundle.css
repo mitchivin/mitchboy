@@ -839,14 +839,13 @@ html {
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Page shell header — desktop scale; mobile/narrow overrides below. */
+  /* Page shell header — one inset for brand text, menu icon, and panels. */
   --shell-chrome-row: 52px;
   --shell-chrome-h: var(--shell-chrome-row);
   --shell-brand-size: 14px;
   --shell-toggle-size: 52px;
   --shell-menu-icon: 24px;
-  --shell-bar-pad: 0 8px 0 22px;
-  --shell-panel-inset: 16px;
+  --shell-inset: 16px;
   /* Fit factor inside the stage below the header (desktop < 1). */
   --gb-fit: 0.88;
   --gb-stage-pad-x: 40px;
@@ -943,8 +942,7 @@ html.mobile-viewport {
   --shell-brand-size: 13px;
   --shell-toggle-size: 48px;
   --shell-menu-icon: 23px;
-  --shell-bar-pad: 0 6px 0 14px;
-  --shell-panel-inset: 10px;
+  --shell-inset: 10px;
   /* Slight inset so the taller header never clips the device */
   --gb-fit: 0.96;
   --gb-stage-pad-x: 14px;
@@ -1035,10 +1033,8 @@ body.app-loading #app-shell-loader {
 #shell-help-toggle,
 #shell-controls-toggle {
   box-sizing: border-box;
-  width: var(--shell-toggle-size);
-  height: var(--shell-toggle-size);
+  height: var(--shell-chrome-row);
   margin: 0;
-  padding: 0;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -1054,6 +1050,18 @@ body.app-loading #app-shell-loader {
   transition:
     opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#shell-controls-toggle {
+  width: var(--shell-toggle-size);
+  padding: 0;
+}
+
+/* Right inset matches left brand text and dropdown panels. */
+#shell-help-toggle {
+  width: auto;
+  padding: 0 var(--shell-inset) 0 12px;
+  justify-content: flex-end;
 }
 
 #shell-help-toggle .material-symbols-outlined,
@@ -1084,45 +1092,104 @@ body.app-loading #app-shell-loader {
   justify-content: space-between;
   width: 100%;
   min-height: var(--shell-chrome-row);
-  padding: var(--shell-bar-pad);
-  gap: 10px;
+  padding: 0;
+  gap: 0;
 }
 
-.shell-help-brand {
+/* ── Brand (identical DOM in shell + demo; shell disables the button) ── */
+
+.shell-brand {
   display: flex;
-  align-items: baseline;
-  gap: 0.4em;
+  flex: 0 1 auto;
+  align-items: stretch;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 1;
+  height: var(--shell-chrome-row);
+}
+
+.shell-brand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  max-width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 0 0 var(--shell-inset);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
   color: rgba(190, 230, 205, 0.72);
   font-family: 'Source Sans 3', sans-serif;
   font-size: var(--shell-brand-size);
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  line-height: 1.2;
-  pointer-events: none;
-  user-select: none;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.shell-help-brand__name {
+.shell-brand-btn:disabled {
+  cursor: default;
+  opacity: 1;
+  color: rgba(190, 230, 205, 0.72);
+}
+
+.shell-brand-name {
   color: rgba(220, 245, 228, 0.92);
   font-weight: 600;
 }
 
-.shell-help-brand__tag {
+.shell-brand-tag {
   color: rgba(160, 210, 180, 0.48);
   font-weight: 500;
+}
+
+.shell-brand-caret {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 8px;
+  margin-left: 0.15em;
+  color: rgba(160, 210, 180, 0.55);
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shell-brand-btn:not(:disabled):is(:hover, :focus-visible),
+.shell-brand.is-open .shell-brand-btn {
+  color: rgba(235, 250, 240, 0.96);
+  outline: none;
+}
+
+.shell-brand-btn:not(:disabled):is(:hover, :focus-visible) .shell-brand-name,
+.shell-brand.is-open .shell-brand-name {
+  color: rgba(245, 252, 247, 0.98);
+}
+
+.shell-brand-btn:not(:disabled):is(:hover, :focus-visible) .shell-brand-tag,
+.shell-brand.is-open .shell-brand-tag {
+  color: rgba(190, 230, 205, 0.64);
+}
+
+.shell-brand-btn:not(:disabled):is(:hover, :focus-visible) .shell-brand-caret,
+.shell-brand.is-open .shell-brand-caret {
+  color: rgba(220, 245, 228, 0.82);
+}
+
+.shell-brand.is-open .shell-brand-caret {
+  transform: rotate(180deg);
 }
 
 .shell-help-actions {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
+  height: var(--shell-chrome-row);
 }
 
 #shell-help-toggle:hover,
@@ -1143,11 +1210,12 @@ body.app-loading #app-shell-loader {
 }
 
 #shell-help-panel,
-#shell-controls-panel {
+#shell-controls-panel,
+#shell-brand-menu {
   position: absolute;
   top: 100%;
   left: auto;
-  right: var(--shell-panel-inset);
+  right: var(--shell-inset);
   z-index: 1;
   box-sizing: border-box;
   min-width: 204px;
@@ -1168,15 +1236,48 @@ body.app-loading #app-shell-loader {
   overflow: hidden;
 }
 
-/* Device panel hangs under its own icon (not the far-right edge) */
 #shell-controls-panel {
   right: 0;
   min-width: 188px;
 }
 
+#shell-brand-menu {
+  left: var(--shell-inset);
+  right: auto;
+  min-width: 148px;
+  max-width: min(220px, calc(100vw - 28px));
+}
+
 #shell-help-panel[hidden],
-#shell-controls-panel[hidden] {
+#shell-controls-panel[hidden],
+#shell-brand-menu[hidden] {
   display: none !important;
+}
+
+.shell-brand-item {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shell-brand-item.is-current:disabled,
+.shell-brand-item.is-placeholder:disabled {
+  opacity: 1;
+  cursor: default;
+  pointer-events: none;
+}
+
+.shell-brand-item.is-current:disabled {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.shell-brand-item.is-placeholder:disabled {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.shell-brand-item .shell-brand-check {
+  margin-left: auto;
+  color: rgba(190, 230, 205, 0.72);
+  opacity: 1;
 }
 
 .shell-help-link,
@@ -1489,8 +1590,7 @@ body.app-loading #app-shell-loader {
     --shell-brand-size: 13px;
     --shell-toggle-size: 48px;
     --shell-menu-icon: 23px;
-    --shell-bar-pad: 0 6px 0 14px;
-    --shell-panel-inset: 10px;
+    --shell-inset: 10px;
     --gb-fit: 0.96;
     --gb-stage-pad-x: 14px;
     --gb-stage-pad-y: 12px;

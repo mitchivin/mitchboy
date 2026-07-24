@@ -76,26 +76,33 @@
       width: 100%;
       align-items: center;
       justify-content: space-between;
-      padding: 0 8px 0 22px;
+      padding: 0;
     }
-    .shell-help-brand {
-      display: flex;
-      align-items: baseline;
+    .shell-brand-btn {
+      display: inline-flex;
+      align-items: center;
       gap: 0.4em;
-      color: rgba(190, 230, 205, 0.72);
-      font: 500 14px/1.2 'Source Sans 3', sans-serif;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .shell-help-actions { display: flex; align-items: center; }
-    #shell-help-toggle {
-      box-sizing: border-box;
-      width: 52px;
       height: 52px;
       margin: 0;
-      padding: 0;
+      padding: 0 0 0 16px;
       border: none;
-      border-radius: 0;
+      background: transparent;
+      color: rgba(190, 230, 205, 0.72);
+      font: 500 14px/1 'Source Sans 3', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .shell-brand-name { color: rgba(220, 245, 228, 0.92); font-weight: 600; }
+    .shell-brand-tag { color: rgba(160, 210, 180, 0.48); font-weight: 500; }
+    .shell-brand-caret { display: block; width: 12px; height: 8px; color: rgba(160, 210, 180, 0.55); }
+    .shell-help-actions { display: flex; align-items: center; height: 52px; }
+    #shell-help-toggle {
+      box-sizing: border-box;
+      height: 52px;
+      margin: 0;
+      border: none;
       background: transparent;
       color: rgba(255, 255, 255, 0.9);
       cursor: pointer;
@@ -104,15 +111,20 @@
       justify-content: center;
       opacity: 0.48;
     }
-    #shell-help-panel[hidden] { display: none !important; }
+    #shell-controls-toggle { width: 52px; padding: 0; }
+    #shell-help-toggle { width: auto; padding: 0 16px 0 12px; justify-content: flex-end; }
+    #shell-help-panel[hidden],
+    #shell-brand-menu[hidden] { display: none !important; }
     @media (max-width: 600px) {
       #shell-help {
         height: calc(48px + env(safe-area-inset-top, 0px));
         padding-top: env(safe-area-inset-top, 0px);
       }
-      .shell-help-bar { padding: 0 6px 0 14px; }
-      .shell-help-brand { font-size: 13px; }
-      #shell-help-toggle { width: 48px; height: 48px; }
+      .shell-brand-btn { height: 48px; font-size: 13px; padding-left: 10px; }
+      .shell-help-actions { height: 48px; }
+      #shell-help-toggle { height: 48px; }
+      #shell-controls-toggle { width: 48px; }
+      #shell-help-toggle { padding: 0 10px 0 8px; }
     }
   </style>
   <title>MI Boy Color</title>
@@ -199,9 +211,11 @@
 
   <div id="shell-help" style="position:fixed;top:0;left:0;right:0;z-index:30001;">
     <div class="shell-help-bar">
-      <div class="shell-help-brand" aria-hidden="true">
-        <span class="shell-help-brand__name">MI Boy</span>
-        <span class="shell-help-brand__tag">Demo</span>
+      <div class="shell-brand" id="shell-brand">
+        <button type="button" class="shell-brand-btn" id="shell-brand-btn" disabled tabindex="-1">
+          <span class="shell-brand-name">MI Boy</span>
+          <span class="shell-brand-tag">Demo</span>
+        </button>
       </div>
       <div class="shell-help-actions">
         
@@ -211,6 +225,8 @@
         </button>
       </div>
     </div>
+    
+
     <div id="shell-help-panel" role="menu" hidden>
       <div class="shell-help-subheader">Built with</div>
       <a class="shell-help-link" id="shell-help-doodledev" href="https://doodledev.app" target="_blank" rel="noopener noreferrer">
