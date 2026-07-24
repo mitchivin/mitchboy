@@ -1,8 +1,9 @@
+<!-- Source for the public shell README. Copied by: npm run release:shell -->
 # MI Boy Color
 
 Open-source **handheld shell** for MI Boy Color. Device chrome HTML, CSS, and face assets only. No emulator, menus, or ROM library in this repo.
 
-Live product: coming soon.
+Live demo: [builds.doodledev.app/#/miboy](https://builds.doodledev.app/#/miboy).
 
 The shell was designed in **[DoodleDev](https://doodledev.app)** and sits in the page as normal HTML/CSS. No framework, no runtime deps.
 
@@ -55,6 +56,7 @@ Open whatever URL it prints (usually `http://localhost:3000`). You should see th
 
 ## Related
 
+- [DoodleBuilds](https://builds.doodledev.app/) - shared live demo host
 - [MiPod](https://github.com/mitchivin/mipod) - click-wheel music player
 - [MitchIvin XP](https://mitchivin.com/) - Windows XP portfolio desktop
 
