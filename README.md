@@ -1,4 +1,4 @@
-# MI Boy Color — Shell
+# MI Boy Color - Shell
 
 Open-source **handheld shell** designed in [DoodleDev](https://doodledev.app).
 
@@ -7,7 +7,7 @@ It does **not** include the emulator, menus, Controls app, or game library.
 
 ## Play the real product
 
-**[miboy.mitchivin.com](https://miboy.mitchivin.com)**
+**[coming soon)**
 
 ## Run the shell demo
 
