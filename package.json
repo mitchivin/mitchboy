@@ -1,6 +1,6 @@
 {
   "name": "mi-boy-color-shell",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "Open-source DoodleDev handheld shell for MI Boy Color (no emulator).",
   "license": "MIT",

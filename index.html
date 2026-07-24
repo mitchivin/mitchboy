@@ -24,7 +24,35 @@
         radial-gradient(circle at 82% 26%, rgba(74, 222, 128, 0.025), transparent 50%),
         linear-gradient(180deg, #02110c 0%, #010806 48%, #000302 100%) !important;
     }
-    to { transform: rotate(360deg); }
+    /* Hide device only — keep menu button visible during boot */
+    body.app-loading #gameboy-container {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    #app-shell-loader {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 20000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: none !important;
+      background: transparent !important;
+    }
+    body:not(.app-loading) #app-shell-loader { display: none !important; }
+    .shell-boot-spinner {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(134, 239, 172, 0.16);
+      border-top-color: rgba(134, 239, 172, 0.95);
+      box-shadow: 0 0 22px rgba(74, 222, 128, 0.22);
+      animation: shellBootSpin 0.85s linear infinite;
+    }
+    @keyframes shellBootSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
     /* Header visible during boot (before layout.css) */
     #shell-help {
@@ -79,12 +107,12 @@
     #shell-help-panel[hidden] { display: none !important; }
     @media (max-width: 600px) {
       #shell-help {
-        height: calc(44px + env(safe-area-inset-top, 0px));
+        height: calc(48px + env(safe-area-inset-top, 0px));
         padding-top: env(safe-area-inset-top, 0px);
       }
-      .shell-help-bar { padding: 0 4px 0 12px; }
-      .shell-help-brand { font-size: 12px; }
-      #shell-help-toggle { width: 44px; height: 44px; }
+      .shell-help-bar { padding: 0 6px 0 14px; }
+      .shell-help-brand { font-size: 13px; }
+      #shell-help-toggle { width: 48px; height: 48px; }
     }
   </style>
   <title>MI Boy Color</title>
@@ -142,9 +170,13 @@
       pointer-events: auto !important;
       cursor: pointer !important;
     }
-    #gb-keys-toggle.is-menu-open .gb-face-hotspot-art,
-    #gb-keys-toggle:hover .gb-face-hotspot-art {
+    #gb-keys-toggle.is-menu-open .gb-face-hotspot-art {
       opacity: 0.6;
+    }
+    @media (hover: hover) {
+      #gb-keys-toggle:hover .gb-face-hotspot-art {
+        opacity: 0.6;
+      }
     }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -159,8 +191,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
 </head>
 
-<body style="background-color:#02110c;margin:0;">
-  
+<body class="app-loading" style="background-color:#02110c;margin:0;">
+  <!-- Spinner + menu first; device hidden until boot finishes -->
+  <div id="app-shell-loader" aria-live="polite" aria-label="Loading" style="position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+    <div class="shell-boot-spinner" aria-hidden="true" style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(134,239,172,0.16);border-top-color:rgba(134,239,172,0.95);box-shadow:0 0 22px rgba(74,222,128,0.22);animation:shellBootSpin 0.85s linear infinite;"></div>
+  </div>
 
   <div id="shell-help" style="position:fixed;top:0;left:0;right:0;z-index:30001;">
     <div class="shell-help-bar">
@@ -526,7 +561,21 @@
     </div><!-- end #gameboy-component -->
   </div><!-- end #gameboy-container -->
 
-  
+  <div id="shell-confirm" hidden>
+    <div class="shell-confirm-backdrop" data-shell-confirm-dismiss></div>
+    <div class="shell-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="shell-confirm-title" aria-describedby="shell-confirm-message">
+      <div class="shell-confirm-header">
+        <div id="shell-confirm-title" class="shell-confirm-title">Open Link</div>
+      </div>
+      <div class="shell-confirm-content">
+        <p id="shell-confirm-message" class="shell-confirm-message">Opens DoodleDev in a new tab. This device is available in the Preset menu.</p>
+        <div class="shell-confirm-actions">
+          <button type="button" class="shell-confirm-btn" data-shell-confirm-dismiss>Cancel</button>
+          <button type="button" class="shell-confirm-btn shell-confirm-btn--primary" id="shell-confirm-open">Open</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/shellPress.js" defer></script>
 </body>

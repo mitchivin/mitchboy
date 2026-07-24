@@ -938,16 +938,17 @@ body.bg-cutting-mat::before {
 }
 
 html.mobile-viewport {
-  --shell-chrome-row: 44px;
-  --shell-chrome-h: calc(44px + env(safe-area-inset-top, 0px));
-  --shell-brand-size: 12px;
-  --shell-toggle-size: 44px;
-  --shell-menu-icon: 22px;
-  --shell-bar-pad: 0 4px 0 12px;
-  --shell-panel-inset: 8px;
-  --gb-fit: 1;
+  --shell-chrome-row: 48px;
+  --shell-chrome-h: calc(48px + env(safe-area-inset-top, 0px));
+  --shell-brand-size: 13px;
+  --shell-toggle-size: 48px;
+  --shell-menu-icon: 23px;
+  --shell-bar-pad: 0 6px 0 14px;
+  --shell-panel-inset: 10px;
+  /* Slight inset so the taller header never clips the device */
+  --gb-fit: 0.96;
   --gb-stage-pad-x: 14px;
-  --gb-stage-pad-y: 14px;
+  --gb-stage-pad-y: 12px;
 }
 
 body.dev-chrome-hidden #shell-help {
@@ -1359,11 +1360,12 @@ body.app-loading #app-shell-loader {
 #shell-confirm {
   position: fixed;
   inset: 0;
-  z-index: 400;
+  z-index: 40000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  pointer-events: auto;
 }
 
 #shell-confirm[hidden] {
@@ -1479,19 +1481,19 @@ body.app-loading #app-shell-loader {
   background: rgba(255, 255, 255, 0.24);
 }
 
-/* Narrow viewports — same header, full-fit stage (no desktop shrink). */
+/* Narrow viewports — same taller mobile header + slight device inset. */
 @media (max-width: 600px) {
   html {
-    --shell-chrome-row: 44px;
-    --shell-chrome-h: calc(44px + env(safe-area-inset-top, 0px));
-    --shell-brand-size: 12px;
-    --shell-toggle-size: 44px;
-    --shell-menu-icon: 22px;
-    --shell-bar-pad: 0 4px 0 12px;
-    --shell-panel-inset: 8px;
-    --gb-fit: 1;
+    --shell-chrome-row: 48px;
+    --shell-chrome-h: calc(48px + env(safe-area-inset-top, 0px));
+    --shell-brand-size: 13px;
+    --shell-toggle-size: 48px;
+    --shell-menu-icon: 23px;
+    --shell-bar-pad: 0 6px 0 14px;
+    --shell-panel-inset: 10px;
+    --gb-fit: 0.96;
     --gb-stage-pad-x: 14px;
-    --gb-stage-pad-y: 14px;
+    --gb-stage-pad-y: 12px;
   }
 
   .shell-help-icon {

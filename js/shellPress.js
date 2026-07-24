@@ -208,6 +208,97 @@
     });
   }
 
+  const LINK_CONFIRMS = {
+    doodledev: {
+      url: 'https://doodledev.app',
+      message: 'Opens DoodleDev in a new tab. This device is available in the Preset menu.',
+    },
+    github: {
+      url: 'https://github.com/mitchivin',
+      message: "Opens Mitch's Github in a new tab.",
+    },
+    instagram: {
+      url: 'https://www.instagram.com/mitchivin/',
+      message: "Opens Mitch's Instagram in a new tab.",
+    },
+    linkedin: {
+      url: 'https://www.linkedin.com/in/mitchivin/',
+      message: "Opens Mitch's LinkedIn in a new tab.",
+    },
+    author: {
+      url: 'https://mitchivin.com/',
+      message: "Opens Mitch's Portfolio in a new tab.",
+    },
+  };
+
+  function initLinkConfirms(closeHelp) {
+    const root = byId('shell-confirm');
+    const openBtn = byId('shell-confirm-open');
+    const messageEl = byId('shell-confirm-message');
+    const titleEl = byId('shell-confirm-title');
+    if (!root || !openBtn || !messageEl) return;
+
+    let pendingUrl = null;
+    let ignoreDismissUntil = 0;
+
+    const setConfirmOpen = (open) => {
+      root.hidden = !open;
+      root.classList.toggle('is-open', open);
+      if (open) {
+        const isMobile = document.documentElement.classList.contains('mobile-viewport');
+        if (!isMobile) openBtn.focus({ preventScroll: true });
+      }
+      if (!open) pendingUrl = null;
+    };
+
+    const showConfirm = (config) => {
+      closeHelp?.();
+      pendingUrl = config.url;
+      if (titleEl) titleEl.textContent = 'Open Link';
+      messageEl.textContent = config.message;
+      ignoreDismissUntil = Date.now() + 450;
+      setConfirmOpen(true);
+    };
+
+    const bindConfirm = (id, config) => {
+      const link = byId(id);
+      link?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showConfirm(config);
+      });
+    };
+
+    bindConfirm('shell-help-doodledev', LINK_CONFIRMS.doodledev);
+    bindConfirm('shell-help-github', LINK_CONFIRMS.github);
+    bindConfirm('shell-help-instagram', LINK_CONFIRMS.instagram);
+    bindConfirm('shell-help-linkedin', LINK_CONFIRMS.linkedin);
+    bindConfirm('shell-help-author', LINK_CONFIRMS.author);
+
+    openBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const url = pendingUrl;
+      setConfirmOpen(false);
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    });
+
+    root.querySelectorAll('[data-shell-confirm-dismiss]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (Date.now() < ignoreDismissUntil) return;
+        setConfirmOpen(false);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && root.classList.contains('is-open')) {
+        setConfirmOpen(false);
+      }
+    });
+  }
+
   function setupHelpMenu() {
     const helpRoot = byId('shell-help');
     const helpToggle = byId('shell-help-toggle');
@@ -232,6 +323,8 @@
       if (!faceMark) return;
       faceMark.classList.toggle('is-menu-open', open);
       faceMark.setAttribute('aria-expanded', open ? 'true' : 'false');
+      // Touch leaves sticky :hover after tap — drop focus so the highlight clears.
+      if (!open) faceMark.blur();
     };
 
     const setHelpOpen = (open) => {
@@ -292,19 +385,42 @@
       helpToggle.focus();
     });
 
+    initLinkConfirms(() => setHelpOpen(false));
     setHelpOpen(false);
   }
 
-  function start() {
+  const BOOT_MIN_MS = 480;
+  const BOOT_FADE_MS = 420;
+
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function hideShellLoader() {
+    document.body.classList.remove('app-loading');
+    const loader = byId('app-shell-loader');
+    if (!loader) return;
+    loader.classList.add('is-hidden');
+    await wait(BOOT_FADE_MS);
+    loader.remove();
+  }
+
+  async function start() {
+    const bootStartedAt = performance.now();
     detectMobileViewport();
     setupFaceButtons();
     setupDpad();
     setupKeyboard();
     setupHelpMenu();
+    const remaining = Math.max(0, BOOT_MIN_MS - (performance.now() - bootStartedAt));
+    await wait(remaining);
+    await hideShellLoader();
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once: true });
+    document.addEventListener('DOMContentLoaded', () => {
+      start();
+    }, { once: true });
   } else {
     start();
   }
