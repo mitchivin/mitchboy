@@ -839,13 +839,26 @@ html {
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Page shell header — desktop scale; mobile/narrow overrides below. */
+  --shell-chrome-row: 52px;
+  --shell-chrome-h: var(--shell-chrome-row);
+  --shell-brand-size: 14px;
+  --shell-toggle-size: 52px;
+  --shell-menu-icon: 24px;
+  --shell-bar-pad: 0 8px 0 22px;
+  --shell-panel-inset: 16px;
+  /* Fit factor inside the stage below the header (desktop < 1). */
+  --gb-fit: 0.88;
+  --gb-stage-pad-x: 40px;
+  --gb-stage-pad-y: 24px;
+  --gb-aspect: 0.5819892473;
 }
 
 body {
   height: 100%;
   height: 100dvh;
   margin: 0;
-  padding: 28px;
+  padding: 0;
   overflow: hidden;
   overscroll-behavior: none;
   background:
@@ -854,10 +867,6 @@ body {
     radial-gradient(circle at 18% 22%, rgba(110, 231, 183, 0.03), transparent 48%),
     radial-gradient(circle at 82% 26%, rgba(74, 222, 128, 0.025), transparent 50%),
     linear-gradient(180deg, #02110c 0%, #010806 48%, #000302 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   font-family: 'Source Sans 3', sans-serif;
   position: relative;
   touch-action: none;
@@ -898,30 +907,55 @@ body.bg-cutting-mat::before {
   opacity: 0;
 }
 
+/* ── Game Boy stage (viewport below header; device centered inside) ── */
+
 #gameboy-container {
-  position: relative;
+  position: fixed;
+  top: var(--shell-chrome-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
-  /* Desktop: a bit more breathing room than the max-fill shell */
-  --base-width: min(calc(100vw - 100px), calc((100dvh - 100px) * 0.5819892473));
-  width: var(--base-width);
-  /* Pin height from width — aspect-ratio alone re-rounds on first paint and can nudge 1px. */
-  height: calc(var(--base-width) / 0.5819892473);
-  flex-shrink: 0;
-  display: block;
-  overflow: hidden;
-}
-
-body.dev-chrome-hidden {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   justify-content: center;
-}
-
-/* Device reveal — menu button stays visible during boot */
-#gameboy-container {
+  width: auto;
+  margin: 0;
+  padding: var(--gb-stage-pad-y) var(--gb-stage-pad-x);
+  --base-width: min(
+    calc((100vw - (var(--gb-stage-pad-x) * 2)) * var(--gb-fit)),
+    calc(
+      (100dvh - var(--shell-chrome-h) - (var(--gb-stage-pad-y) * 2)) * var(--gb-aspect) *
+        var(--gb-fit)
+    )
+  );
   opacity: 1;
   transform: none;
   transition:
     opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.mobile-viewport {
+  --shell-chrome-row: 44px;
+  --shell-chrome-h: calc(44px + env(safe-area-inset-top, 0px));
+  --shell-brand-size: 12px;
+  --shell-toggle-size: 44px;
+  --shell-menu-icon: 22px;
+  --shell-bar-pad: 0 4px 0 12px;
+  --shell-panel-inset: 8px;
+  --gb-fit: 1;
+  --gb-stage-pad-x: 14px;
+  --gb-stage-pad-y: 14px;
+}
+
+body.dev-chrome-hidden #shell-help {
+  display: none !important;
+}
+
+body.dev-chrome-hidden #gameboy-container {
+  top: 0;
 }
 
 body.app-loading #gameboy-container {
@@ -971,103 +1005,153 @@ body.app-loading #app-shell-loader {
   }
 }
 
-/* ── Floating help (XP chromeless surgical glass) ──────────── */
+/* ── Page shell header (brand left, menu right — desktop + mobile) ── */
 
-#shell-chrome {
+#shell-help {
   position: fixed;
-  top: 16px;
-  left: 16px;
-  right: auto;
+  top: 0;
+  left: 0;
+  right: 0;
   bottom: auto;
-  z-index: 300;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-#shell-chrome.is-idle {
-  opacity: 0.4;
-}
-
-#shell-help,
-#shell-controls {
-  position: relative;
+  z-index: 30001;
+  width: 100%;
+  height: var(--shell-chrome-h);
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top, 0px) 0 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  opacity: 1;
+  background: rgba(2, 17, 12, 0.42);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-tap-highlight-color: transparent;
 }
 
 #shell-help-toggle,
 #shell-controls-toggle {
   box-sizing: border-box;
-  width: 34px;
-  height: 34px;
+  width: var(--shell-toggle-size);
+  height: var(--shell-toggle-size);
   margin: 0;
   padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(8, 18, 14, 0.42);
-  backdrop-filter: blur(32px) saturate(160%);
-  -webkit-backdrop-filter: blur(32px) saturate(160%);
-  color: rgba(255, 255, 255, 0.78);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  filter: none;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   opacity: 0.48;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+  -webkit-tap-highlight-color: transparent;
   transition:
-    opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #shell-help-toggle .material-symbols-outlined,
-#shell-controls-toggle .material-symbols-outlined {
+#shell-help-toggle .shell-help-icon-menu,
+#shell-controls-toggle .material-symbols-outlined,
+#shell-controls-toggle .shell-help-icon-menu {
   font-family: 'Material Symbols Outlined', sans-serif;
   font-weight: normal;
   font-style: normal;
-  font-size: 18px;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-size: var(--shell-menu-icon);
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   line-height: 1;
   pointer-events: none;
   user-select: none;
 }
 
+#shell-controls {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.shell-help-bar {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--shell-chrome-row);
+  padding: var(--shell-bar-pad);
+  gap: 10px;
+}
+
+.shell-help-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 1;
+  color: rgba(190, 230, 205, 0.72);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: var(--shell-brand-size);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  pointer-events: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shell-help-brand__name {
+  color: rgba(220, 245, 228, 0.92);
+  font-weight: 600;
+}
+
+.shell-help-brand__tag {
+  color: rgba(160, 210, 180, 0.48);
+  font-weight: 500;
+}
+
+.shell-help-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
 #shell-help-toggle:hover,
+#shell-help-toggle:focus-visible,
 #shell-help.is-open #shell-help-toggle,
 #shell-controls-toggle:hover,
+#shell-controls-toggle:focus-visible,
 #shell-controls.is-open #shell-controls-toggle {
-  opacity: 1;
-  background: rgba(12, 26, 20, 0.88);
-  border-color: rgba(255, 255, 255, 0.4);
+  opacity: 0.95;
+  background: transparent;
   color: #ffffff;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.32),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
 #shell-help-toggle:active,
 #shell-controls-toggle:active {
-  background: rgba(16, 32, 24, 0.92);
+  background: transparent;
+  opacity: 0.8;
 }
 
 #shell-help-panel,
 #shell-controls-panel {
   position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
+  top: 100%;
+  left: auto;
+  right: var(--shell-panel-inset);
   z-index: 1;
   box-sizing: border-box;
   min-width: 204px;
-  max-width: min(260px, calc(100vw - 32px));
+  max-width: min(280px, calc(100vw - 28px));
+  margin-top: 8px;
   padding: 6px 0;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -1081,6 +1165,12 @@ body.app-loading #app-shell-loader {
   flex-direction: column;
   gap: 0;
   overflow: hidden;
+}
+
+/* Device panel hangs under its own icon (not the far-right edge) */
+#shell-controls-panel {
+  right: 0;
+  min-width: 188px;
 }
 
 #shell-help-panel[hidden],
@@ -1130,6 +1220,10 @@ body.app-loading #app-shell-loader {
   color: rgba(255, 255, 255, 0.42);
   pointer-events: none;
   user-select: none;
+}
+
+.shell-help-subheader:first-child {
+  margin-top: 2px;
 }
 
 .shell-help-link,
@@ -1385,37 +1479,19 @@ body.app-loading #app-shell-loader {
   background: rgba(255, 255, 255, 0.24);
 }
 
+/* Narrow viewports — same header, full-fit stage (no desktop shrink). */
 @media (max-width: 600px) {
-  body {
-    padding: 18px;
-  }
-
-  #gameboy-container {
-    /* Mobile: only a tiny step back from max-fill */
-    --base-width: min(calc(100vw - 60px), calc((100dvh - 60px) * 0.5819892473));
-  }
-
-  #shell-chrome {
-    top: 12px;
-    left: 12px;
-    right: auto;
-    bottom: auto;
-  }
-
-  #shell-help-toggle,
-  #shell-controls-toggle {
-    width: 36px;
-    height: 36px;
-    opacity: 0.92;
-    background: rgba(8, 18, 14, 0.72);
-    border-color: rgba(255, 255, 255, 0.28);
-    color: rgba(255, 255, 255, 0.92);
-  }
-
-  #shell-help-toggle .material-symbols-outlined,
-  #shell-controls-toggle .material-symbols-outlined {
-    font-size: 20px;
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  html {
+    --shell-chrome-row: 44px;
+    --shell-chrome-h: calc(44px + env(safe-area-inset-top, 0px));
+    --shell-brand-size: 12px;
+    --shell-toggle-size: 44px;
+    --shell-menu-icon: 22px;
+    --shell-bar-pad: 0 4px 0 12px;
+    --shell-panel-inset: 8px;
+    --gb-fit: 1;
+    --gb-stage-pad-x: 14px;
+    --gb-stage-pad-y: 14px;
   }
 
   .shell-help-icon {
@@ -1458,48 +1534,54 @@ body.app-loading #app-shell-loader {
    ========================================================================== */
 
 /*
- * LCD hold under the canvas — same navy as the menu screen.
- * Prevents the grey `#gameboy-screen` CSS fill flashing when pixels are cleared.
+ * Shared LCD panel (ROM + menus):
+ * - navy hold under canvas / avatar
+ * - saturate/contrast punch under glass
+ * - ::before wash + ::after dark scanlines / RGB grid (no white veil)
  */
-#rom-mode-container {
-  background-color: #1a1f35;
+#rom-mode-container,
+.gb-screen-container {
+  --gb-lcd-bg: #1a1f35;
+  filter: saturate(1.18) contrast(1.06);
 }
 
-#gameboy-screen {
-  background-color: #1a1f35;
+#rom-mode-container,
+#gameboy-screen,
+.gb-screen-container {
+  background-color: var(--gb-lcd-bg, #1a1f35);
 }
 
-/*
- * LCD glass treatment for ROM play only (not the menu chrome).
- * Static CSS overlays — no canvas filters / blend modes on the emu blit path.
- */
 #rom-mode-container::before,
-#rom-mode-container::after {
+#rom-mode-container::after,
+.gb-screen-container::before,
+.gb-screen-container::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 50;
 }
 
-#rom-mode-container::before {
-  background: rgba(48, 62, 42, 0.055);
-  box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.2);
+#rom-mode-container::before,
+.gb-screen-container::before {
+  background: rgba(48, 62, 42, 0.04);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.12);
 }
 
-#rom-mode-container::after {
+#rom-mode-container::after,
+.gb-screen-container::after {
   background-image:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.09) 50%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.11) 50%),
     linear-gradient(
       90deg,
-      rgba(255, 40, 40, 0.028),
-      rgba(40, 255, 40, 0.015),
-      rgba(40, 40, 255, 0.028)
+      rgba(255, 40, 40, 0.035),
+      rgba(40, 255, 40, 0.018),
+      rgba(40, 40, 255, 0.035)
     );
   background-size:
     100% 3px,
     5px 100%;
-  opacity: 0.78;
+  opacity: 0.8;
 }
 
 /* Outer screen box that covers the full emulator canvas */
@@ -1518,18 +1600,8 @@ body.app-loading #app-shell-loader {
   /* Minimum separation between avatar header and menu body */
   container-type: size;
   container-name: menu-screen;
-  background-color: #1a1f35;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  background-size:
-    cover,
-    100% 4px,
-    6px 100%;
   background-position: center;
   image-rendering: pixelated;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
   font-family: 'Press Start 2P', monospace;
   color: rgba(255, 255, 255, 0.95);
   overflow: hidden;
@@ -2161,9 +2233,10 @@ body.app-loading #app-shell-loader {
 #gameboy-component {
   position: relative;
   min-width: 0;
-  aspect-ratio: 0.5819892473;
-  width: 100%;
-  height: 100%;
+  width: var(--base-width);
+  height: calc(var(--base-width) / var(--gb-aspect, 0.5819892473));
+  flex-shrink: 0;
+  overflow: hidden;
   container-type: inline-size;
   container-name: gameboy;
   -webkit-tap-highlight-color: transparent;

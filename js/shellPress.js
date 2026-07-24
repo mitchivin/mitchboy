@@ -1,5 +1,6 @@
 /**
- * Shell-demo only: physical face press visuals (A/B sink, Start/Select oval, D-pad rocker).
+ * Shell-demo only: physical face press visuals (A/B sink, Start/Select oval, D-pad rocker)
+ * and full-width help menu (panel auto-close; header always visible).
  * No emulator, menus, or Controls logic.
  */
 (function initShellPress() {
@@ -26,6 +27,17 @@
 
   function byId(id) {
     return document.getElementById(id);
+  }
+
+  function detectMobileViewport() {
+    const ua = navigator.userAgent || '';
+    const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(ua);
+    const isAppleTablet = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+    const isTouchPhysicalScreen =
+      ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.screen.width <= 1024;
+    if (isMobileUA || isAppleTablet || isTouchPhysicalScreen) {
+      document.documentElement.classList.add('mobile-viewport');
+    }
   }
 
   function applyButtonVisual(name, pressed) {
@@ -197,12 +209,14 @@
   }
 
   function setupHelpMenu() {
-    const chrome = byId('shell-chrome');
     const helpRoot = byId('shell-help');
     const helpToggle = byId('shell-help-toggle');
     const helpPanel = byId('shell-help-panel');
     const faceMark = byId('gb-keys-toggle');
-    if (!chrome || !helpRoot || !helpToggle || !helpPanel) return;
+    if (!helpRoot || !helpToggle || !helpPanel) return;
+
+    // Shell OSS has no Controls/Save/Load app actions
+    document.querySelectorAll('[data-shell-desktop-only]').forEach((el) => el.remove());
 
     const IDLE_MS = 3000;
     let idleTimer = null;
@@ -212,11 +226,6 @@
         clearTimeout(idleTimer);
         idleTimer = null;
       }
-    };
-
-    const showChrome = () => {
-      clearIdleTimer();
-      chrome.classList.remove('is-idle');
     };
 
     const syncFaceMark = (open) => {
@@ -230,22 +239,21 @@
       helpToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       helpPanel.hidden = !open;
       syncFaceMark(open);
-      if (open) showChrome();
+      if (open) clearIdleTimer();
     };
 
     const toggleHelp = () => {
-      showChrome();
       setHelpOpen(!helpRoot.classList.contains('is-open'));
     };
 
-    const scheduleIdleHide = () => {
+    /** Auto-close dropdown only; header always stays visible. */
+    const schedulePanelClose = () => {
       clearIdleTimer();
-      if (chrome.contains(document.activeElement)) return;
+      if (helpRoot.contains(document.activeElement)) return;
       idleTimer = setTimeout(() => {
         idleTimer = null;
-        if (chrome.contains(document.activeElement)) return;
+        if (helpRoot.contains(document.activeElement)) return;
         setHelpOpen(false);
-        chrome.classList.add('is-idle');
       }, IDLE_MS);
     };
 
@@ -267,18 +275,14 @@
       });
     }
 
-    chrome.addEventListener('pointerenter', showChrome);
-    chrome.addEventListener('pointerleave', scheduleIdleHide);
-    document.documentElement.addEventListener('mouseleave', scheduleIdleHide);
-    document.documentElement.addEventListener('mouseenter', showChrome);
-    window.addEventListener('blur', scheduleIdleHide);
+    helpRoot.addEventListener('pointerleave', schedulePanelClose);
+    window.addEventListener('blur', schedulePanelClose);
 
     document.addEventListener('click', (e) => {
       if (!helpRoot.classList.contains('is-open')) return;
-      if (chrome.contains(e.target)) return;
+      if (helpRoot.contains(e.target)) return;
       if (faceMark?.contains(e.target)) return;
       setHelpOpen(false);
-      scheduleIdleHide();
     });
 
     document.addEventListener('keydown', (e) => {
@@ -286,14 +290,13 @@
       if (!helpRoot.classList.contains('is-open')) return;
       setHelpOpen(false);
       helpToggle.focus();
-      showChrome();
     });
 
     setHelpOpen(false);
-    scheduleIdleHide();
   }
 
   function start() {
+    detectMobileViewport();
     setupFaceButtons();
     setupDpad();
     setupKeyboard();
