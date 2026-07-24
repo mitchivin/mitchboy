@@ -1,9 +1,8 @@
 {
-  "name": "mitch-boy-color",
+  "name": "mi-boy-color-shell",
   "version": "0.0.2",
   "private": true,
-  "type": "module",
-  "description": "Mitch Boy Color - web Game Boy / Game Boy Color emulator with a handheld UI. Play .gb and .gbc ROMs in the browser.",
+  "description": "Open-source DoodleDev handheld shell for MI Boy Color (no emulator).",
   "license": "MIT",
   "author": "Mitch Ivin",
   "scripts": {
