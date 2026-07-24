@@ -1,4 +1,3 @@
-<!-- Source for the public shell README. Copied by: npm run release:shell -->
 # MI Boy Color
 
 Open-source **handheld shell** for MI Boy Color. Device chrome HTML, CSS, and face assets only. No emulator, menus, or ROM library in this repo.
